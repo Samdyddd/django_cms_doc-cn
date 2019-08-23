@@ -41,11 +41,11 @@ Placeholders
 
 可以看到 ``{% load cms_tags %}`` 在那个文件中 - ``cms_tags`` 是所需的模板标记库。
 
-If you're not already familiar with Django template tags, you can find out more in the `Django documentation
+如果您还不熟悉Django模板标记，您可以在Django文档中找到更多信息。 `Django documentation
 <https://docs.djangoproject.com/en/dev/topics/templates/>`_.
 
-Add a couple of new placeholders to ``fullwidth.html``, ``{% placeholder "feature" %}`` and ``{%
-placeholder "splashbox" %}`` inside the ``{% block content %}`` section. For example:
+添加连个新的占位符到 ``fullwidth.html``, ``{% placeholder "feature" %}`` and ``{%
+placeholder "splashbox" %}`` inside the ``{% block content %}`` section. 例如:
 
 .. code-block:: html+django
    :emphasize-lines: 2,4
@@ -56,7 +56,7 @@ placeholder "splashbox" %}`` inside the ``{% block content %}`` section. For exa
         {% placeholder "splashbox" %}
     {% endblock content %}
 
-If you switch to *Structure* mode, you'll see the new placeholders available for use.
+如果切换到结构模式，您将看到可以使用的新占位符。
 
 .. image:: /introduction/images/new-placeholder.png
    :alt: the new 'splashbox' placeholder
@@ -67,22 +67,17 @@ If you switch to *Structure* mode, you'll see the new placeholders available for
 Static Placeholders
 *******************
 
-The content of the placeholders we've encountered so far is different for
-every page. Sometimes though you'll want to have a section on your website
-which should be the same on every single page, such as a footer block.
+：到目前为止，我们遇到的占位符的内容对于每个页面都是不同的。
+虽然有时候你想在你的网站上有一个每一页都应该相同的部分，比如页脚。
 
-You *could* hard-code your footer into the template, but it would be nicer to be
-able to manage it through the CMS. This is what **static placeholders** are for.
+您可以将页脚硬编码到模板中，但是能够通过CMS管理页脚会更好。这就是静态占位符的作用。
 
-Static placeholders are an easy way to display the same content on multiple
-locations on your website. Static placeholders act almost like normal
-placeholders, except for the fact that once a static placeholder is created and
-you added content to it, it will be saved globally. Even when you remove the
-static placeholders from a template, you can reuse them later.
+静态占位符是在网站的多个位置显示相同内容的简单方法。
+静态占位符的行为几乎与普通占位符一样，除了一个事实，即一旦创建了一个静态占位符并向其添加了内容，它将被全局保存。
+即使从模板中删除静态占位符，也可以稍后重用它们
 
-So let's add a footer to all our pages. Since we want our footer on every
-single page, we should add it to our **base template**
-(``mysite/templates/base.html``). Place it near the end of the HTML ``<body>`` element:
+让我们给所有页面添加一个页脚。因为我们希望每个页面都有页脚，所以应该将它添加到基本模板
+(``mysite/templates/base.html``). 将其放在HTML``<body>`` 元素的末尾:
 
 .. code-block:: html+django
    :emphasize-lines: 1-3
@@ -95,8 +90,7 @@ single page, we should add it to our **base template**
         {% render_block "js" %}
     </body>
 
-Save the template and return to your browser. Refresh any page in Structure mode, and you'll
-see the new static placeholder.
+保存模板并返回到浏览器。在结构模式下刷新任何页面，您将看到新的静态占位符。
 
 .. image:: /introduction/images/static-placeholder.png
    :alt: a static placeholder
@@ -104,28 +98,25 @@ see the new static placeholder.
 
 ..  note::
 
-    To reduce clutter in the interface, the plugins in static placeholders are hidden by default.
-    Click or tap on the name of the static placeholder to reveal/hide them.
+    为了减少界面的混乱，默认情况下，静态占位符中的插件是隐藏的。单击或轻击静态占位符的名称以显示/隐藏它们。
 
-If you add some content to the new static placeholder in the usual way, you'll see that it
-appears on your site's other pages too.
+如果您按照通常的方式向新的静态占位符添加一些内容，您将看到它也会出现在站点的其他页面上。
 
 
 ***************
 Rendering Menus
 ***************
 
-In order to render the CMS's menu in your template you can use the :doc:`show_menu
-</reference/navigation>` tag.
+为了在模板中呈现CMS的菜单，可以使用  :doc:`show_menu
+</reference/navigation>` 标签。
 
-Any template that uses ``show_menu`` must load the CMS's ``menu_tags`` library
-first:
+任何使用show_menu的模板都必须先加载CMS的menu_tags库:
 
 .. code-block:: html+django
 
     {% load menu_tags %}
 
-The menu we use in ``mysite/templates/base.html`` is:
+我们在mysite/templates/base.html中使用的菜单是:
 
 .. code-block:: html+django
 
@@ -133,6 +124,6 @@ The menu we use in ``mysite/templates/base.html`` is:
         {% show_menu 0 100 100 100 "menu.html" %}
     </ul>
 
-The options control the levels of the site hierarchy that are displayed in the menu tree - but you don't need to worry about exactly what they do at this stage.
+这些选项控制了在菜单树中显示的站点层次结构的级别——但是在这个阶段您不需要担心它们具体做了什么。
 
 Next we'll look at :ref:`integrating_applications`.

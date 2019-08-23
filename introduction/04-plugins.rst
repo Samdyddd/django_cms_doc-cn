@@ -4,8 +4,7 @@
 Plugins
 #######
 
-In this tutorial we're going to take a basic Django opinion poll application and integrate it into
-the CMS.
+在本教程中，我们将使用一个基本的Django民意调查应用程序并将其集成到CMS中。
 
 
 *********************************
@@ -28,15 +27,14 @@ In the ``models.py`` of ``polls_cms_integration`` add the following:
             return self.poll.question
 
 
-This creates a plugin model class; these all inherit from the
-:class:`cms.models.pluginmodel.CMSPlugin` base class.
+这创建了一个插件模型类;这些都继承自``cms.models.pluginmodel.CMSPlugin``基类。
 
 .. note::
 
-    django CMS plugins inherit from :class:`cms.models.pluginmodel.CMSPlugin` (or a
-    sub-class thereof) and not :class:`models.Model <django.db.models.Model>`.
+    django CMS plugins 继承了 :class:`cms.models.pluginmodel.CMSPlugin` (or a
+    sub-class thereof) 而不是 :class:`models.Model <django.db.models.Model>`.
 
-Create and run migrations:
+创建和运行迁移:
 
 ..  code-block:: bash
 
@@ -47,11 +45,10 @@ Create and run migrations:
 The Plugin Class
 ================
 
-Now create a new file ``cms_plugins.py`` in the same folder your ``models.py`` is in.
-The plugin class is responsible for providing django CMS with the necessary
-information to render your plugin.
+现在在``model .py``所在的文件夹中创建一个新文件``cms_plugin .py``。
+plugin类负责为django CMS提供呈现插件所需的信息。
 
-For our poll plugin, we're going to write the following plugin class:
+对于我们的poll插件，我们将编写以下插件类:
 
 .. code-block:: python
 
@@ -74,24 +71,23 @@ For our poll plugin, we're going to write the following plugin class:
 
 .. note::
 
-    All plugin classes must inherit from :class:`cms.plugin_base.CMSPluginBase`
-    and must register themselves with the :class:`plugin_pool <cms.plugin_pool.PluginPool>`.
+    所有插件类都必须继承自cms.plugin_base。CMSPluginBase必须在plugin_pool中注册它们自己。
 
-A reasonable convention for plugin naming is:
+一个合理的插件命名约定是:
 
 * ``PollPluginModel``: the *model* class
 * ``PollPluginPublisher``: the *plugin* class
 
-You don't need to follow this convention, but choose one that makes sense and stick to it.
+你不需要遵循这个惯例，但要选择一个有意义的并坚持下去。
 
 
 The template
 ============
 
-The ``render_template`` attribute in the plugin class is required, and tells the plugin which
-:attr:`render_template <cms.plugin_base.CMSPluginBase.render_template>` to use when rendering.
+插件类中的render_template属性是必需的，它告诉插件渲染时使用哪个render_template。
 
-In this case the template needs to be at ``polls_cms_integration/templates/polls_cms_integration/poll_plugin.html`` and should look something like this:
+在这种情况下，模板需要位于 ``polls_cms_integration/templates/polls_cms_integration/poll_plugin.html``，
+和如下所示:
 
 .. code-block:: html+django
 
@@ -117,16 +113,14 @@ In this case the template needs to be at ``polls_cms_integration/templates/polls
 Test the plugin
 ***************************************************
 
-Now you can restart the runserver (required because you added the new ``cms_plugins.py`` file, and
+现在可以重新启动runserver，这是必需的，因为您添加了新的 ``cms_plugins.py`` 文件, and
 visit http://localhost:8000/.
 
-You can now drop the ``Poll Plugin`` into any placeholder on any page, just as
-you would any other plugin.
+您现在可以将Poll插件放入任何页面的任何占位符中，就像您可以将其放入任何其他插件一样。
 
 .. image:: /introduction/images/poll-plugin-in-menu.png
    :alt: the 'Poll plugin' in the plugin selector
    :width: 400
    :align: center
 
-Next we'll integrate the Polls application more fully into our django CMS
-project.
+接下来，我们将把poll应用程序更全面地集成到django CMS项目中。

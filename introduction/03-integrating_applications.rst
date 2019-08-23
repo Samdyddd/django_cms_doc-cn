@@ -4,29 +4,26 @@
 Integrating applications
 ########################
 
-All the following sections of this tutorial are concerned with different ways of integrating other
-applications into django CMS. The ease with which other applications can be built into django CMS
-sites is an important feature of the system.
+本教程的所有后续部分都关注将其他应用程序集成到django CMS中的不同方法。
+其他应用程序可以轻松地构建到django CMS站点中，这是该系统的一个重要特性。
 
-Integrating applications doesn't merely mean installing them alongside django CMS, so that they peacefully co-exist. It
-means using django CMS's features to build them into a single coherent web project that speeds up the work of managing
-the site, and makes possible richer and more automated publishing.
+集成应用程序并不仅仅意味着将它们与django CMS一起安装，以便它们能够和平共存。
+这意味着使用django CMS的特性将它们构建成一个统一的web项目，从而加快管理站点的工作，
+并使更丰富和更自动化的发布成为可能。
 
-It's key to the way that django CMS integration works that **it doesn't require you to modify your other applications**
-unless you want to. This is particularly important when you're using third-party applications and don't want to have to
-maintain your own forked versions of them. (The only exception to this is if you decide to build django CMS features
-directly into the applications themselves, for example when using :ref:`placeholders in other applications
-<placeholders_outside_cms>`.)
+django CMS集成工作的关键在于，它不需要修改其他应用程序，除非您愿意。
+当您使用第三方应用程序，并且不想维护自己的分叉版本时，这一点尤其重要。
+(唯一的例外是，如果您决定将django CMS特性直接构建到应用程序本身，
+例如在其他应用程序中使用占位符时 :ref:`placeholders in other applications<placeholders_outside_cms>`.)
 
-For this tutorial, we're going to take a basic Django `opinion poll application
-<https://github.com/divio/django-polls>`_ and integrate it into the CMS.
+在本教程中，我们将使用一个基本的Django民意调查应用程序并将其集成到CMS中。
 
 So we will:
 
-* incorporate the Polls application into the project
-* create a second, independent, *Polls/CMS Integration* application to manage the integration
+* 将民意调查应用程序合并到项目中
+* 创建第二个独立的Polls/CMS集成应用程序来管理集成
 
-This way we can integrate the Polls application without having to change anything in it.
+通过这种方式，我们可以集成民意调查应用程序，而无需更改其中的任何内容。
 
 
 *************************************
@@ -36,14 +33,14 @@ Incorporate the ``polls`` application
 Install ``polls``
 =================
 
-Install the application from its GitHub repository using ``pip``::
+使用pip从其GitHub存储库安装应用程序: ``pip``::
 
     pip install git+http://git@github.com/divio/django-polls.git#egg=polls
 
-Let's add this application to our project. Add ``'polls'`` to the end of ``INSTALLED_APPS`` in
-your project's `settings.py` (see the note on :ref:`installed_apps` about ordering ).
+让我们将这个应用程序添加到我们的项目中。
+在项目的settings.py中，在INSTALLED_APPS的末尾添加'polls'(请参阅INSTALLED_APPS设置订购的说明)
 
-Add the ``poll`` URL configuration to ``urlpatterns`` in the project's ``urls.py``:
+将``poll`` URL配置添加到项目的``urls.py``中的``urlpatterns``:
 
 ..  code-block:: python
     :emphasize-lines: 3
@@ -54,25 +51,23 @@ Add the ``poll`` URL configuration to ``urlpatterns`` in the project's ``urls.py
         url(r'^', include('cms.urls')),
     )
 
-Note that it must be included **before** the line for the django CMS URLs. django CMS's URL pattern
-needs to be last, because it "swallows up" anything that hasn't already been matched by a previous
-pattern.
+注意，它必须包含在django CMS url的行之前。
+django CMS的URL模式需要放在最后，因为它“吞噬”了任何之前的模式没有匹配的内容。
 
-Now run the application's migrations:
+现在运行应用程序的迁移:
 
 .. code-block:: bash
 
     python manage.py migrate polls
 
-At this point you should be able to log in to the Django
-admin - ``http://localhost:8000/admin/`` - and find the Polls application.
+此时，您应该能够登录Django admin- ``http://localhost:8000/admin/`` -并找到poll应用程序。
 
 .. image:: /introduction/images/polls-admin.png
    :alt: the polls application admin
    :width: 400
    :align: center
 
-Create a new **Poll**, for example:
+创建一个新的 **Poll**, for example:
 
 * **Question**: *Which browser do you prefer?*
 
@@ -82,7 +77,7 @@ Create a new **Poll**, for example:
     * *Firefox*
     * *Chrome*
 
-Now if you visit ``http://localhost:8000/en/polls/``, you should be able to see the published poll
+现在，如果访问 ``http://localhost:8000/en/polls/``, 应该能够看到已发布的民意调查并提交响应。
 and submit a response.
 
 .. image:: /introduction/images/polls-unintegrated.png
@@ -91,15 +86,15 @@ and submit a response.
    :align: center
 
 
-Improve the templates for Polls
+改进投票模板
 ===============================
 
-You'll have noticed that in the Polls application we only have minimal templates, and no navigation or styling.
+您会注意到，在poll应用程序中，我们只有很少的模板，没有导航或样式。
 
-Our django CMS pages on the other hand have access to a number of default templates in the project, all of which
-extend one called ``base.html``. So, let's improve this by overriding the polls application's base template.
+另一方面，django CMS页面可以访问项目中的许多默认模板，所有这些模板都扩展了一个名为base.html的模板。
+因此，让我们通过覆盖poll应用程序的基本模板来改进这一点。
 
-We'll do this in the *project* directory.
+我们将在项目目录中执行此操作
 
 In ``mysite/templates``, add ``polls/base.html``, containing:
 
@@ -112,7 +107,7 @@ In ``mysite/templates``, add ``polls/base.html``, containing:
         {% endblock %}
     {% endblock %}
 
-Refresh the ``/polls/`` page again, which should now be properly integrated into the site.
+再次刷新/polls/页面，现在应该正确地集成到站点中。
 
 .. image:: /introduction/images/polls-integrated.png
    :alt: the polls application, integrated
@@ -125,20 +120,19 @@ Refresh the ``/polls/`` page again, which should now be properly integrated into
 Set up a new ``polls_cms_integration`` application
 **************************************************
 
-So far, however, the Polls application has been integrated into the project, but not into django CMS itself. The two
-applications are completely independent. They cannot make use of each other's data or functionality.
+然而，到目前为止，poll应用程序已经集成到项目中，但还没有集成到django CMS本身。
+这两个应用程序是完全独立的。它们不能使用彼此的数据或功能。
 
-Let's create the new *Polls/CMS Integration* application where we will bring them together.
-
+让我们创建新的``Polls/CMS``集成应用程序，将它们放在一起。
 
 Create the application
 ======================
 
-Create a new package at the project root called ``polls_cms_integration``::
+在项目根目录下创建一个名为``polls_cms_integration``的新包::
 
     python manage.py startapp polls_cms_integration
 
-Our workspace now looks like this::
+我们的工作区现在看起来是这样的::
 
     tutorial-project/
         media/
@@ -159,23 +153,20 @@ Our workspace now looks like this::
 Add it to ``INSTALLED_APPS``
 ============================
 
-Next is to integrate the ``polls_cms_integration`` application into the project.
+下一步是将``polls_cms_integration``应用程序集成到项目中。
 
-Add ``polls_cms_integration`` to ``INSTALLED_APPS`` in ``settings.py``  - and now we're ready to use it to begin
-integrating Polls with django CMS. We'll start by :ref:`developing a Polls plugin <plugins_tutorial>`.
 
+将polls_cms_integration添加到settings.py中的INSTALLED_APPS中——现在我们准备使用它开始将poll与django CMS集成。
+我们将从开发一个Polls插件开始。
 .. note::
 
-    **Adding templates to the project or to the application?**
+    **向项目或应用程序添加模板?**
 
-    Earlier, we added new templates to the project. We could equally well have have added ``templates/polls/base.html``
-    inside ``polls_cms_integration``. After all, that's where we're going to be doing all the other integration work.
+    早些时候，我们向项目添加了新的模板。我们也可以在polls_cms_integration中添加模板/polls/base.html。毕竟，这是我们要做的所有其他的积分工作。
 
-    However, we'd now have an application that makes assumptions about the name of the template it should extend (see
-    the first line of the ``base.html`` template we created) which might not be correct for a different project.
+    但是，现在我们有了一个应用程序，它对应该扩展的模板的名称进行了假设(请参阅我们创建的base.html模板的第一行)，这可能不适用于其他项目。
 
-    Also, we'd have to make sure that ``polls_cms_integration`` came *before* ``polls`` in ``INSTALLED_APPS``,
-    otherwise the templates in ``polls_cms_integration`` would not in fact override the ones in ``polls``. Putting
-    them in the project guarantees that they will override those in all applications.
+    此外，我们还必须确保polls_cms_integration先于INSTALLED_APPS中的轮询，否则polls_cms_integration中的模板实际上不会覆盖轮询中的模板。
+    将它们放在项目中可以保证它们将覆盖所有应用程序中的那些。
 
-    Either way of doing it is reasonable, as long as you understand their implications.
+    任何一种方法都是合理的，只要你理解它们的含义。
