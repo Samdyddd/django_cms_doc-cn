@@ -2,12 +2,12 @@
 Content creation wizards
 ########################
 
-Content creation wizards allow you to make use of the toolbar's **Create** button in your own
-applications. It opens up a simple dialog box with the basic fields required to create a new item.
+内容创建向导允许您在自己的应用程序中使用工具栏的Create按钮。
+它打开一个简单的对话框，其中包含创建新项目所需的基本字段。
 
-django CMS uses it for creating Pages, but you can add your own models to it.
+django CMS使用它来创建页面，但是您可以向其中添加自己的模型。
 
-In the ``polls_cms_integration`` application, add a ``forms.py`` file::
+在polls_cms_integration应用程序中，添加一个forms.py文件:
 
     from django import forms
 
@@ -39,14 +39,11 @@ Then add a ``cms_wizards.py`` file, containing::
 
     wizard_pool.register(poll_wizard)
 
-Refresh the Polls page, hit the **Create** button in the toolbar - and the wizard dialog will open,
-offering you a new wizard for creating Polls.
+刷新民意调查页面，点击工具栏中的``Create``按钮，向导对话框将打开，为您提供一个用于创建民意调查的新向导。
 
 .. note::
 
-    Once again, this particular example is for illustration only. In the case of a Poll, with
-    its multiple Questions associated with it via foreign keys, we really want to be able to
-    edit those questions at the same time too.
+    同样，这个特殊的例子只是为了说明。
+    在轮询的情况下，它的多个问题通过外键与之关联，我们真的希望能够同时编辑这些问题。
 
-    That would require a much more sophisticated form and processing than is possible within the
-    scope of this tutorial.
+    这将需要比本教程范围内可能的更复杂的表单和处理。

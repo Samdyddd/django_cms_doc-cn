@@ -1,19 +1,18 @@
 .. _third_party:
 
 #####################################
-Integrating a third-party application
+Integrating a third-party application 
 #####################################
 
-We've already written our own django CMS plugins and apps, but now we want to
-extend our CMS with a third-party application,
-`Aldryn News & Blog <https://github.com/aldryn/aldryn-newsblog>`_.
+我们已经编写了自己的django CMS插件和应用程序，
+但是现在我们想用第三方应用程序Aldryn News & Blog扩展CMS。
 
 
 ******************
 Basic installation
 ******************
 
-First, we need to install the app into our virtual environment from
+首先，我们需要从PyPI将app安装到我们的虚拟环境中:
 `PyPI <https://pypi.python.org>`_::
 
     pip install aldryn-newsblog
@@ -26,9 +25,8 @@ Django settings
 ``INSTALLED_APPS``
 ==================
 
-Add the application and any of its requirements that are not there already to
-``INSTALLED_APPS`` in ``settings.py``. Some *will* be already present; it's up
-to you to check them because you need to avoid duplication:
+在settings.py中为INSTALLED_APPS添加应用程序及其任何尚未存在的需求。
+有些人已经到场;你可以检查它们，因为你需要避免重复:
 
 .. code-block:: python
 
@@ -54,8 +52,7 @@ to you to check them because you need to avoid duplication:
 ``THUMBNAIL_PROCESSORS``
 ========================
 
-One of the dependencies is Django Filer. It provides a special feature that allows more
-sophisticated image cropping. For this to work it needs its own thumbnail processor
+其中一个依赖项是Django Filer。它提供了一个特殊的功能，允许更复杂的图像裁剪。为了实现这一点，它需要自己的缩略图处理器
 (``filer.thumbnail_processors.scale_and_crop_with_subject_location``) to be listed in
 ``settings.py`` in place of ``easy_thumbnails.processors.scale_and_crop``:
 
@@ -74,9 +71,8 @@ sophisticated image cropping. For this to work it needs its own thumbnail proces
 ``ALDRYN_BOILERPLATE_NAME``
 ===========================
 
-Aldryn News & Blog uses aldryn-boilerplates_ to provide multiple sets of templates and static files
-for different CSS frameworks. We're using the Bootstrap 3 in this tutorial, so let's choose
-``bootstrap3`` by adding the setting:
+Aldryn News & Blog使用Aldryn样板文件为不同的CSS框架提供多组模板和静态文件。
+我们在本教程中使用Bootstrap 3，所以让我们通过添加设置来选择bootstrap3:
 
 .. code-block:: python
 
@@ -86,7 +82,7 @@ for different CSS frameworks. We're using the Bootstrap 3 in this tutorial, so l
 ``STATICFILES_FINDERS``
 =======================
 
-Add the boilerplates static files finder to ``STATICFILES_FINDERS``, *immediately before*
+将样板文件静态文件查找器添加到 ``STATICFILES_FINDERS``, *immediately before*
 ``django.contrib.staticfiles.finders.AppDirectoriesFinder``:
 
 .. code-block:: python
@@ -98,8 +94,7 @@ Add the boilerplates static files finder to ``STATICFILES_FINDERS``, *immediatel
         'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     ]
 
-If ``STATICFILES_FINDERS`` is not defined in your ``settings.py`` just copy and paste the code
-above.
+如果在settings.py中没有定义STATICFILES_FINDERS，则复制并粘贴上面的代码。
 
 
 ``TEMPLATES``
@@ -107,8 +102,8 @@ above.
 
 .. important::
 
-    In Django 1.8, the ``TEMPLATE_LOADERS`` and ``TEMPLATE_CONTEXT_PROCESSORS`` settings are
-    rolled into the ``TEMPLATES`` setting. We're assuming you're using Django 1.8 here.
+    在Django 1.8中， ``TEMPLATE_LOADERS`` and ``TEMPLATE_CONTEXT_PROCESSORS`` 
+    设置被卷进了模板设置中 ``TEMPLATES`` setting 。我们假设这里使用的是Django 1.8。
 
 
 .. code-block:: python
@@ -135,44 +130,41 @@ above.
 Migrate the database
 ********************
 
-We've added a new application so we need to update our database::
+我们添加了一个新的应用程序，所以我们需要更新我们的数据库::
 
     python manage.py migrate
 
-Start the server again.
+重新启动服务器
 
 
 ***************************
 Create a new apphooked page
 ***************************
 
-The News & Blog application comes with a django CMS apphook, so add a new django CMS page (call it
-*News*), and add the News & Blog application to it :ref:`just as you did for Polls
-<apply_apphook>`.
+News & Blog应用程序附带django CMS apphook，所以可以添加一个新的django CMS页面(称为News)，
+并将News & Blog应用程序添加到其中，就像您在民意调查中所做的那样
 
-For this application we also need to create and select an *Application configuration*.
+对于这个应用程序，我们还需要创建并选择一个应用程序配置。
 
-Give this application configuration some settings:
+给这个应用程序配置一些设置:
 
 * ``Instance namespace``: *news* (this is used for reversing URLs)
 * ``Application title``: *News* (the name that will represent the application configuration in the
   admin)
 * ``Permalink type``: choose a format you prefer for news article URLs
 
-Save this application configuration, and make sure it's selected in ``Application configurations``.
+保存此应用程序配置，并确保在应用程序配置中选择了它。
 
-Publish the new page, and you should find the News & Blog application at work there. (Until you
-actually create any articles, it will simply inform you that there are *No items available*.)
-
+发布新页面，您应该会发现News & Blog应用程序正在那里工作。
+(在实际创建任何文章之前，它只会告诉您没有可用的项目。)
 
 ****************************
 Add new News & Blog articles
 ****************************
 
-You can add new articles using the admin or the new *News* menu that now appears in the toolbar when you are on a page belonging to News & Blog.
+您可以使用admin或new News菜单添加新文章，当您在属于News & Blog的页面上时，该菜单现在出现在工具栏中。
 
-You can also insert a *Latest articles* plugin into another page - like all good
-django CMS applications, Aldryn News & Blog comes with plugins.
+你也可以在另一个页面中插入一个最新的文章插件——就像所有优秀的django CMS应用程序一样，Aldryn News & Blog也带有插件。
 
 
 .. _aldryn-boilerplates: https://github.com/aldryn/aldryn-boilerplates

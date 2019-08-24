@@ -2,22 +2,19 @@
 Extending the navigation menu
 #############################
 
-You may have noticed that while our Polls application has been integrated into
-the CMS, with plugins, toolbar menu items and so on, the site's navigation menu
-is still only determined by django CMS Pages.
+您可能已经注意到，虽然我们的民意调查应用程序已经集成到CMS中，带有插件、工具栏菜单项等，
+但是站点的导航菜单仍然只由django CMS页面决定。
 
-We can hook into the django CMS menu system to add our own nodes to that
-navigation menu.
+我们可以挂接到django CMS菜单系统中，将我们自己的节点添加到导航菜单中。
 
 
 **************************
 Create the navigation menu
 **************************
 
-We create the menu using a :class:`CMSAttachMenu <cms.menu_bases.CMSAttachMenu>` sub-class, and use the ``get_nodes()``
-method to add the nodes.
+我们使用CMSAttachMenu子类创建菜单，并使用get_nodes()方法添加节点。
 
-For this we need a file called ``cms_menus.py`` in our application. Add ``cms_menus.py`` in ``polls_cms_integration/``:
+为此，我们需要在应用程序中使用一个名为 ``cms_menus.py`` 的文件， 在 ``polls_cms_integration/``添加``cms_menus.py``:
 
 .. code-block:: python
 
@@ -53,30 +50,28 @@ For this we need a file called ``cms_menus.py`` in our application. Add ``cms_me
 
 What's happening here:
 
-* we define a ``PollsMenu`` class, and register it
-* we give the class a ``name`` attribute (will be displayed in admin)
-* in its ``get_nodes()`` method, we build and return a list of nodes, where:
-* first we get all the ``Poll`` objects
+* 定义并注册了``PollsMenu`` class
+* 我们给类一个name属性(将在admin中显示)
+* 在它的get_nodes()方法中，我们构建并返回一个节点列表，whe
+* 首先，我们获得所有的Poll对象
 * ... and then create a ``NavigationNode`` object from each one
-* ... and return a list of these ``NavigationNodes``
+* ... and return a list of these ``NavigationNodes``，并返回这些导航节点的列表
 
-This menu class won't actually do anything until attached to a page. In the *Advanced settings* of the page to which
-you attached the apphook earlier, select "Polls Menu" from the list of *Attached menu* options, and save once more.
-(You could add the menu to any page, but it makes most sense to add it to this page.)
+在附加到页面之前，这个菜单类实际上什么都不会做。
+在前面附加apphook的页面的高级设置中，从附加菜单选项列表中选择“polling Menu”，并再次保存。
+(您可以将菜单添加到任何页面，但是将它添加到这个页面最有意义。)
 
 .. image:: /introduction/images/attach-menu.png
    :alt: select the 'Polls Menu'
    :width: 400
    :align: center
 
-You can force the menu to be added automatically to the page by the apphook if you consider this appropriate. See
-:ref:`apphook_menus` for information on how to do that.
+如果您认为合适，可以强制apphook将菜单自动添加到页面中。
+有关如何做到这一点的信息，请参见向apphooks添加菜单。
 
 ..  note::
 
-    The point here is to illustrate the basic principles. In this actual case, note that:
+    这里的重点是阐明基本原则。在这种实际情况下，请注意:
 
-    * If you're going to use sub-pages, you'll need to improve the menu styling to make it work a
-      bit better.
-    * Since the Polls page lists all the Polls in it anyway, this isn't really the most practical
-      addition to the menu.
+    * 如果要使用子页面，则需要改进菜单样式，使其更好地工作。
+    * 因为民意调查页面列出了其中的所有民意调查，所以这并不是菜单中最实用的添加。

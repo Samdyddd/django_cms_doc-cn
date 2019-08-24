@@ -4,25 +4,22 @@
 Extending the toolbar
 #####################
 
-django CMS allows you to control what appears in the toolbar. This allows you
-to integrate your application in the frontend editing mode of django CMS and
-provide your users with a streamlined editing experience.
+django CMS允许您控制工具栏中出现的内容。
+这允许您将应用程序集成到django CMS的前端编辑模式中，并为用户提供一种流线型的编辑体验。
 
-In this section of the tutorial, we will add a new *Polls* menu to the toolbar.
-
+在本教程的这一部分中，我们将向工具栏添加一个新的民意调查菜单。
 
 *********************************
 Add a basic ``PollToolbar`` class
 *********************************
 
-We'll add various controls to the toolbar, using a ``cms.toolbar_base.CMSToolbar`` sub-class.
+我们将使用 ``cms.toolbar_base.CMSToolbar`` 向工具栏添加各种控件。CMSToolbar子类。
 
 
 Add a menu to the toolbar
 =========================
 
-Start by adding a new file, ``cms_toolbars.py``, to your Polls/CMS Integration application, and
-create the ``CMSToolbar`` class:
+首先添加一个新文件cms_toolbar.py，然后创建CMSToolbar类:
 
 ..  code-block:: python
 
@@ -46,17 +43,16 @@ create the ``CMSToolbar`` class:
 
 ..  note::
 
-    Don't forget to restart the runserver to have your new ``cms_toolbars.py`` file recognised.
+    不要忘记重新启动runserver以识别新的cms_tools.py文件。
 
-You will now find, in every page of the site, a new item in the toolbar:
+现在，你会发现，在网站的每一页，一个新的项目在工具栏:
 
 .. image:: /introduction/images/toolbar-polls.png
    :alt: The Polls menu in the toolbars
    :width: 630
 
-The ``populate()`` method is what gets called when the toolbar is built. In it, we're using
-:meth:`get_or_create_menu() <cms.toolbar.toolbar.CMSToolbar.get_or_create_menu()>` to add a *Polls*
-item to the toolbar.
+生成工具栏时调用populate()方法。
+在其中，我们使用get_or_create_menu()向工具栏添加一个poll项。
 
 
 .. _add-nodes-to-polls-menu:
@@ -64,10 +60,9 @@ item to the toolbar.
 Add nodes to the *Polls* menu
 -----------------------------
 
-So far, the *Polls* menu is empty. We can extend ``populate()`` to add some items.
-``get_or_create_menu`` returns a menu that we can manipulate, so let's change the ``populate()``
-method to add an item that allows us to see the full list of polls in the sideframe, with
-:meth:`add_sideframe_item() <cms.toolbar.items.ToolbarAPIMixin.add_sideframe_item()>`.
+到目前为止，民意调查菜单是空的。我们可以扩展populate()来添加一些项。
+get_or_create_menu返回一个我们可以操作的菜单，因此让我们更改populate()方法来添加一个项，
+它允许我们使用add_sideframe_item()查看侧框中的完整轮询列表。
 
 ..  code-block:: python
     :emphasize-lines: 1, 8, 10-13
@@ -86,12 +81,10 @@ method to add an item that allows us to see the full list of polls in the sidefr
                 url=admin_reverse('polls_poll_changelist'),    # the URL it should open with
             )
 
-After refreshing the page to load the changes, you can now see the list of polls directly from
-the menu.
+刷新页面以加载更改后，现在可以直接从菜单中看到投票列表。
 
-Also useful would be an option to create new polls. We'll use a modal window for this, invoked with
-:meth:`add_modal_item() <cms.toolbar.items.ToolbarAPIMixin.add_modal_item()>`. Add the new code to the
-end of the ``populate()`` method:
+另外一个有用的选项是创建新的民意调查。我们将为此使用一个模态窗口，用add_modal_item()调用。
+将新代码添加到populate()方法的末尾:
 
 ..  code-block:: python
     :emphasize-lines: 6-9
@@ -110,8 +103,8 @@ end of the ``populate()`` method:
 Add buttons to the toolbar
 ==========================
 
-As well as menus, you can add buttons to the toolbar in a very similar way. Rewrite the
-``populate()`` method, noting how closely the structure of this code matches that for adding menus.
+除了菜单，您还可以以非常类似的方式向工具栏添加按钮。
+重写populate()方法，注意此代码的结构与添加菜单的结构匹配程度。
 
 ..  code-block:: python
     :emphasize-lines: 3-13
@@ -135,10 +128,9 @@ As well as menus, you can add buttons to the toolbar in a very similar way. Rewr
 Further refinements
 *******************
 
-The buttons and menu for Polls appear in the toolbar everywhere in the site. It would be useful to
-restrict this to pages that are actually relevant.
+用于投票的按钮和菜单出现在站点的工具栏中。将其限制在实际相关的页面上是有用的。
 
-The first thing to add is a test right at the start of the ``populate()`` method:
+要添加的第一件事是在populate()方法的开始处添加一个测试:
 
 ..  code-block:: python
     :emphasize-lines: 3-4
@@ -150,12 +142,10 @@ The first thing to add is a test right at the start of the ``populate()`` method
 
             [...]
 
-The ``is_current_app`` flag tells us if the function handling this view (e.g. the list of polls)
-belongs to the same application as the one responsible for this toolbar menu.
+``is_current_app`` 标志告诉我们，处理这个视图的函数(例如，轮询列表)是否属于负责这个工具栏菜单的应用程序。
 
-Often, this can be detected automatically, but in this case, the view belongs to the ``polls``
-application, whereas the toolbar menu belongs to ``polls_cms_integration``. So, we need to tell the
-``PollToolbar`` class explicitly that it's actually associated with the ``polls`` application:
+通常，这可以自动检测到，但在本例中，视图属于poll应用程序，而工具栏菜单属于polls_cms_integration。
+因此，我们需要显式地告诉PollToolbar类它实际上与poll应用程序相关联:
 
 ..  code-block:: python
     :emphasize-lines: 3
@@ -164,14 +154,14 @@ application, whereas the toolbar menu belongs to ``polls_cms_integration``. So, 
 
         supported_apps = ['polls']
 
-Now, the buttons/menu will only appear in relevant pages.
+ buttons/menu 将只出现在相关页面中。
 
 
 ********************************
 The complete ``cms_toolbars.py``
 ********************************
 
-For completeness, here is the full example:
+为了完整起见，下面是完整的例子:
 
 ..  code-block:: python
 
@@ -215,5 +205,5 @@ For completeness, here is the full example:
 
     toolbar_pool.register(PollToolbar)  # register the toolbar
 
-This is just a basic example, and there's a lot more to django CMS toolbar classes than this - see
-:ref:`toolbar_how_to` for more.
+这只是一个基本的例子，django CMS工具栏类还有很多——请参阅如何扩展工具栏以获得更多信息- see
+:ref:`toolbar_how_to` 。
