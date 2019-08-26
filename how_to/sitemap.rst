@@ -7,11 +7,9 @@ How to create sitemaps 如何创建站点地图
 Sitemap
 *******
 
-Sitemaps are XML files used by Google to index your website by using their
-**Webmaster Tools** and telling them the location of your sitemap.
+站点地图是谷歌使用的XML文件，通过使用它们的网站管理员工具并告诉它们站点地图的位置来索引您的网站。
 
-The :class:`cms.sitemaps.CMSSitemap` will create a sitemap with all the published pages of
-your CMS.
+The :class:`cms.sitemaps.CMSSitemap` 将创建一个包含CMS所有已发布页面的站点地图。
 
 
 *************

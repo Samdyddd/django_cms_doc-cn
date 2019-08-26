@@ -1,72 +1,59 @@
 .. _custom-plugins:
 
 #####################
-How to create Plugins
+How to create Plugins 如何创建插件
 #####################
 
-CMS Plugins are reusable content publishers that can be inserted into django
-CMS pages (or indeed into any content that uses django CMS placeholders). They
-enable the publishing of information automatically, without further
-intervention.
+CMS插件是可重用的内容发布者，可以插入django CMS页面(或者任何使用django CMS占位符的内容)。
+它们使信息自动发布成为可能，无需进一步干预。
 
-This means that your published web content, whatever it is, is kept
-up-to-date at all times.
+这意味着您发布的web内容(无论它是什么)始终保持最新。
 
 It's like magic, but quicker.
 
-Unless you're lucky enough to discover that your needs can be met by the
-built-in plugins, or by the many available third-party plugins, you'll have to
-write your own custom CMS Plugin. Don't worry though - writing a CMS Plugin is
-very straightforward.
+除非您足够幸运地发现您的需求可以通过内置插件或许多可用的第三方插件来满足，
+否则您必须编写自己的定制CMS插件。不过不要担心——编写CMS插件非常简单。
 
 
 *************************************
 Why would you need to write a plugin?
 *************************************
 
-A plugin is the most convenient way to integrate content from another Django
-app into a django CMS page.
+插件是将另一个Django应用程序的内容集成到Django CMS页面中最方便的方法。
 
-For example, suppose you're developing a site for a record company in django
-CMS. You might like to have a "Latest releases" box on your site's home page.
+例如，假设您正在用django CMS为一家唱片公司开发一个站点。您可能希望在站点的主页上有一个“最新版本”框。
 
-Of course, you could every so often edit that page and update the information.
-However, a sensible record company will manage its catalogue in Django too,
-which means Django already knows what this week's new releases are.
+当然，您可以经常编辑该页面并更新信息。不过，一家明智的唱片公司也会用Django来管理自己的音乐目录，
+这意味着Django已经知道本周的新专辑是什么。
 
-This is an excellent opportunity to make use of that information to make your
-life easier - all you need to do is create a django CMS plugin that you can
-insert into your home page, and leave it to do the work of publishing information
-about the latest releases for you.
+这是一个很好的机会,利用这些信息来让你的生活更容易,所有您需要做的是创建一个django CMS插件,
+您可以插入你的主页,并把它出版的最新版本信息的工作。
 
-Plugins are **reusable**. Perhaps your record company is producing a series of
-reissues of seminal Swiss punk records; on your site's page about the series,
-you could insert the same plugin, configured a little differently, that will
-publish information about recent new releases in that series.
+插件是可重用的。也许你的唱片公司正在重新发行一系列具有开创性的瑞士朋克唱片;在您的站点关于该系列的页面上，
+您可以插入相同的插件，只是配置略有不同，它将发布关于该系列最新版本的信息。
 
 ********
-Overview
+Overview 概述
 ********
 
-A django CMS plugin is fundamentally composed of three things.
+django CMS插件基本上由三部分组成
 
-* a plugin **editor**, to configure a plugin each time it is deployed
-* a plugin **publisher**, to do the automated work of deciding what to publish
-* a plugin **template**, to render the information into a web page
+* a plugin **editor**, 插件编辑器，用于在每次部署插件时配置插件
+* a plugin **publisher**, 插件发布程序，自动决定发布什么
+* a plugin **template**, 插件模板，用于将信息呈现到web页面中
 
 These correspond to the familiar Model-View-Template scheme:
+这些对应于我们熟悉的模型-视图-模板模式:
 
-* the plugin **model** to store its configuration
-* the plugin **view** that works out what needs to be displayed
-* the plugin **template** to render the information
+* the plugin **model** to store its configuration 存储配置的插件模型
+* the plugin **view** that works out what needs to be displayed 插件视图，它计算出需要显示什么
+* the plugin **template** to render the information 插件模板来渲染信息
 
-And so to build your plugin, you'll make it from:
+要创建你的插件，你需要:
 
-* a sub-class of :class:`cms.models.pluginmodel.CMSPlugin` to
-  **store the configuration** for your plugin instances
-* a sub-class of :class:`cms.plugin_base.CMSPluginBase` that **defines
-  the operating logic** of your plugin
-* a template that **renders your plugin**
+* 一个:class:`cms.models.pluginmodel.CMSPlugin`子类。CMSPlugin用于存储插件实例的配置
+* 一个:class:`cms.plugin_base.CMSPluginBase`的子类。CMSPluginBase定义插件的操作逻辑
+* 呈现插件的模板
 
 A note about :class:`cms.plugin_base.CMSPluginBase`
 ===================================================
@@ -74,9 +61,8 @@ A note about :class:`cms.plugin_base.CMSPluginBase`
 :class:`cms.plugin_base.CMSPluginBase` is actually a sub-class of
 :class:`django:django.contrib.admin.ModelAdmin`.
 
-Because :class:`~cms.plugin_base.CMSPluginBase` sub-classes ``ModelAdmin`` several important
-``ModelAdmin`` options are also available to CMS plugin developers. These
-options are often used:
+由于:class:`~cms.plugin_base.CMSPluginBase`子类``ModelAdmin``, 
+CMS插件开发人员也可以使用几个重要的ModelAdmin选项。这些选项经常使用:
 
 * ``exclude``
 * ``fields``
@@ -88,10 +74,8 @@ options are often used:
 * ``raw_id_fields``
 * ``readonly_fields``
 
-Please note, however, that not all ``ModelAdmin`` options are effective in a CMS
-plugin. In particular, any options that are used exclusively by the
-``ModelAdmin``'s ``changelist`` will have no effect. These and other notable options
-that are ignored by the CMS are:
+但是请注意，并不是所有的``ModelAdmin``选项在CMS插件中都是有效的。
+特别是，ModelAdmin的变更列表所专用的任何选项都没有效果。这些和其他值得注意的选项被CMS忽略:
 
 * ``actions``
 * ``actions_on_top``
@@ -116,32 +100,29 @@ that are ignored by the CMS are:
 
 
 An aside on models and configuration
+关于模型和配置的题外话
 ====================================
 
 The plugin **model**, the sub-class of :class:`cms.models.pluginmodel.CMSPlugin`,
-is actually optional.
+实际上是可选的。
 
-You could have a plugin that doesn't need to be configured, because it only
-ever does one thing.
+您可以有一个不需要配置的插件，因为它只做一件事。
 
-For example, you could have a plugin that only publishes information
-about the top-selling record of the past seven days. Obviously, this wouldn't
-be very flexible - you wouldn't be able to use the same plugin for the
-best-selling release of the last *month* instead.
+例如，您可以有一个插件，它只发布关于过去七天最畅销记录的信息。很明显，
+这不是一个很灵活的方法——你不能在上个月最畅销的版本中使用相同的插件。
 
-Usually, you find that it is useful to be able to configure your plugin, and this
-will require a model.
+通常，您会发现能够配置插件是很有用的，这需要一个模型。
 
 
 *******************
 The simplest plugin
+最简单的插件
 *******************
 
-You may use ``python manage.py startapp`` to set up the basic layout for you
-plugin app (remember to add your plugin to ``INSTALLED_APPS``). Alternatively, just add a file called ``cms_plugins.py`` to an
-existing Django application.
+您可以使用``python manage.py startapp``为插件应用程序设置基本布局(请记住将插件添加到``INSTALLED_APPS``中)。
+或者，只需要向现有的Django应用程序添加一个名为``cms_plugins.py``的文件。
 
-In ``cms_plugins.py``, you place your plugins. For our example, include the following code::
+In ``cms_plugins.py``, 你把你的插件。在我们的例子中，包括以下代码::
 
     from cms.plugin_base import CMSPluginBase
     from cms.plugin_pool import plugin_pool
@@ -154,63 +135,45 @@ In ``cms_plugins.py``, you place your plugins. For our example, include the foll
         render_template = "hello_plugin.html"
         cache = False
 
-Now we're almost done. All that's left is to add the template. Add the
-following into the root template directory in a file called
-``hello_plugin.html``:
+差不多做完了。剩下的就是添加模板。将以下内容添加到名为``hello_plugin.html``的文件的根模板目录中:
 
 .. code-block:: html+django
 
     <h1>Hello {% if request.user.is_authenticated %}{{ request.user.first_name }} {{ request.user.last_name}}{% else %}Guest{% endif %}</h1>
 
-This plugin will now greet the users on your website either by their name if
-they're logged in, or as Guest if they're not.
+这个插件将会在你的网站上通过用户的名字来欢迎他们，如果他们已经登录，或者作为客人，如果他们没有登录。
 
-Now let's take a closer look at what we did there. The ``cms_plugins.py`` files
-are where you should define your sub-classes of
-:class:`cms.plugin_base.CMSPluginBase`, these classes define the different
-plugins.
+现在让我们仔细看看我们做了什么。您应该在``cms_plugins.py``文件中定义:class:`cms.plugin_base.CMSPluginBase`的子类。这
+些类定义了不同的插件。
 
-There are two required attributes on those classes:
+这些类有两个必需的属性:
 
-* ``model``: The model you wish to use for storing information about this plugin.
-  If you do not require any special information, for example configuration, to
-  be stored for your plugins, you can simply use
-  :class:`cms.models.pluginmodel.CMSPlugin` (we'll look at that model more
-  closely in a bit). In a normal admin class, you don't need to supply this
-  information because ``admin.site.register(Model, Admin)`` takes care of it,
-  but a plugin is not registered in that way.
-* ``name``: The name of your plugin as displayed in the admin. It is generally
-  good practice to mark this string as translatable using
-  :func:`django.utils.translation.ugettext_lazy`, however this is optional. By
-  default the name is a nicer version of the class name.
+* ``model``: 您希望用于存储有关此插件的信息的模型。如果您不需要为您的插件存储任何特殊的信息，
+    例如配置，您可以简单地使用cms.models.pluginmodel。CMSPlugin(我们稍后会更仔细地研究这个模型)。
+    在普通的admin类中，您不需要提供此信息，因为admin.site。register(Model, Admin)负责它，但是插件不是以这种方式注册的。
+* ``name``: 在管理中显示的插件名称。通常，使用:func:`django.utils.translation.ugettext_lazy`将该字符串标记为可翻译，
+  这是一种很好的实践，但是这是可选的。默认情况下，名称是类名称的更好版本。
 
-And one of the following **must** be defined if ``render_plugin`` attribute
-is ``True`` (the default):
+如果 ``render_plugin``属性为True(默认值)，则必须定义以下属性之一:
 
-* ``render_template``: The template to render this plugin with.
+* ``render_template``: 用来呈现此插件的模板.
 
 **or**
 
-* ``get_render_template``: A method that returns a template path to render the
-  plugin with.
+* ``get_render_template``: 返回用于呈现插件的模板路径的方法。
 
-In addition to those attributes, you can also override the :meth:`~cms.plugin_base.CMSPluginBase.render()` method
-which determines the template context variables that are used to render your
-plugin. By default, this method only adds ``instance`` and ``placeholder``
-objects to your context, but plugins can override this to include any context
-that is required.
+除了这些属性之外，您还可以覆盖render()方法，该方法确定用于呈现插件的模板上下文变量。
+默认情况下，此方法只向上下文添加实例和占位符对象，但是插件可以覆盖此方法以包含所需的任何上下文。
 
-A number of other methods are available for overriding on your CMSPluginBase
-sub-classes. See: :class:`~cms.plugin_base.CMSPluginBase` for further details.
+还有许多其他方法可用来覆盖CMSPluginBase子类。更多细节请参见 :class:`~cms.plugin_base.CMSPluginBase`
 
 
 ***************
 Troubleshooting
 ***************
 
-Since plugin modules are found and loaded by django's importlib, you might
-experience errors because the path environment is different at runtime. If
-your `cms_plugins` isn't loaded or accessible, try the following::
+由于插件模块是由django的importlib找到并加载的，所以您可能会遇到错误，
+因为运行时的路径环境不同。如果您的cms_plugins没有加载或无法访问，请尝试以下操作:
 
     $ python manage.py shell
     >>> from importlib import import_module
@@ -220,22 +183,18 @@ your `cms_plugins` isn't loaded or accessible, try the following::
 .. _storing configuration:
 
 *********************
-Storing configuration
+Storing configuration 存储配置
 *********************
 
-In many cases, you want to store configuration for your plugin instances. For
-example, if you have a plugin that shows the latest blog posts, you might want
-to be able to choose the amount of entries shown. Another example would be a
-gallery plugin where you want to choose the pictures to show for the plugin.
+在许多情况下，您希望为插件实例存储配置。例如，如果您有一个显示最新博客文章的插件，
+您可能希望能够选择显示的条目数量。另一个例子是一个图库插件，您想要为插件选择要显示的图片。
 
-To do so, you create a Django model by sub-classing
-:class:`cms.models.pluginmodel.CMSPlugin` in the ``models.py`` of an installed
-application.
+为此，您可以通过子类化:class:`cms.models.pluginmodel.CMSPlugin`来创建Django模型。
+已安装应用程序的``models.py``中的CMSPlugin。
 
-Let's improve our ``HelloPlugin`` from above by making its fallback name for
-non-authenticated users configurable.
+让我们从上面改进``HelloPlugin``，为未经身份验证的用户配置它的回退名称。
 
-In our ``models.py`` we add the following::
+在 ``models.py`` 中添加如下::
 
     from cms.models.pluginmodel import CMSPlugin
 
@@ -245,13 +204,11 @@ In our ``models.py`` we add the following::
         guest_name = models.CharField(max_length=50, default='Guest')
 
 
-If you followed the Django tutorial, this shouldn't look too new to you. The
-only difference to normal models is that you sub-class
-:class:`cms.models.pluginmodel.CMSPlugin` rather than
+如果您学习了Django教程，这对您来说应该不是什么新鲜事。
+与普通模型的唯一区别是，您可以子类化:class:`cms.models.pluginmodel.CMSPlugin` 而不是
 :class:`django.db.models.Model`.
 
-Now we need to change our plugin definition to use this model, so our new
-``cms_plugins.py`` looks like this::
+现在我们需要修改插件定义来使用这个模型，所以我们的新``cms_plugins.py``看起来像这样:
 
     from cms.plugin_base import CMSPluginBase
     from cms.plugin_pool import plugin_pool
@@ -270,11 +227,9 @@ Now we need to change our plugin definition to use this model, so our new
             context = super(HelloPlugin, self).render(context, instance, placeholder)
             return context
 
-We changed the ``model`` attribute to point to our newly created ``Hello``
-model and pass the model instance to the context.
+我们更改了``model``属性，以指向新创建的``Hello``模型，并将模型实例传递给上下文。
 
-As a last step, we have to update our template to make use of this
-new configuration:
+作为最后一步，我们必须更新我们的模板来使用这个新的配置:
 
 .. code-block:: html+django
 
@@ -284,65 +239,49 @@ new configuration:
       {{ instance.guest_name }}
     {% endif %}</h1>
 
-The only thing we changed there is that we use the template variable ``{{
-instance.guest_name }}`` instead of the hard-coded ``Guest`` string in the else
-clause.
+我们唯一改变的是使用模板变量 ``{{ instance.guest_name }}`` 而不是else子句中的硬编码guest字符串。
 
 .. warning::
 
-    You cannot name your model fields the same as any installed plugins lower-
-    cased model name, due to the implicit one-to-one relation Django uses for
-    sub-classed models. If you use all core plugins, this includes: ``file``,
-    ``googlemap``, ``link``, ``picture``, ``snippetptr``, ``teaser``,
-    ``twittersearch``, ``twitterrecententries`` and ``video``.
+    由于Django对子类模型使用隐式的一对一关系，您不能将您的模型字段命名为与任何已安装的插件相同的低大小写模型名称。
+    如果您使用所有核心插件，这包括:文件、google地图、链接、图片、snippetptr、预告片、twittersearch、
+    twitterrecententries和视频。
 
-    Additionally, it is *recommended* that you avoid using ``page`` as a model
-    field, as it is declared as a property of :class:`cms.models.pluginmodel.CMSPlugin`,
-    and your plugin will not work as intended in the administration without
-    further work.
+    此外，建议您避免使用page作为模型字段，因为它被声明为cms.models.pluginmodel的属性。
+    如果没有进一步的工作，CMSPlugin和您的插件将无法在管理中正常工作。
 
 .. warning::
 
-    If you are using Python 2.x and overriding the ``__unicode__`` method of the
-    model file, make sure to return its results as UTF8-string. Otherwise
-    saving an instance of your plugin might fail with the frontend editor showing
-    an <Empty> plugin instance. To return in Unicode use a return statement like
-    ``return u'{0}'.format(self.guest_name)``.
+    如果您使用的是python2。并覆盖模型文件的``_unicode__``方法，确保将其结果返回为UTF8-string。
+    否则，在前端编辑器显示<Empty> plugin实例时，保存插件实例可能会失败。要在Unicode中返回，
+    可以使用return语句``return u'{0}'.format(self.guest_name)``.
 
 .. _handling-relations:
 
 Handling Relations
 ==================
 
-Every time the page with your custom plugin is published the plugin is copied.
-So if your custom plugin has foreign key (to it, or from it) or many-to-many
-relations you are responsible for copying those related objects, if required,
-whenever the CMS copies the plugin - **it won't do it for you automatically**.
+每次发布带有自定义插件的页面时，都会复制该插件。因此，如果你的自定义插件有外键(到它，或从它)或多对多关系，
+你负责复制那些相关的对象，如果需要，每当CMS复制插件-它不会自动为你做这件事。
 
-Every plugin model inherits the empty
-:meth:`cms.models.pluginmodel.CMSPlugin.copy_relations` method from the base
-class, and it's called when your plugin is copied. So, it's there for you to
-adapt to your purposes as required.
+每个插件模型都继承基类中的空
+:meth:`cms.models.pluginmodel.CMSPlugin.copy_relations` 方法，并在复制插件时调用该方法。
+所以，你可以根据需要调整自己的目的。
 
-Typically, you will want it to copy related objects. To do this you should
-create a method called ``copy_relations`` on your plugin model, that receives
-the **old** instance of the plugin as an argument.
+通常，您希望它复制相关对象。为此，您应该在插件模型上创建一个名为``copy_relationships``的方法，
+该方法接收插件的旧实例作为参数。
 
-You may however decide that the related objects shouldn't be copied - you may
-want to leave them alone, for example. Or, you might even want to choose some
-altogether different relations for it, or to create new ones when it's
-copied... it depends on your plugin and the way you want it to work.
+但是，您可能会决定不复制相关对象—例如，您可能希望不复制它们。或者，
+你甚至可能想要为它选择一些完全不同的关系，或者当它被复制时创建一个新的关系…这取决于你的插件和你想要它工作的方式。
 
-If you do want to copy related objects, you'll need to do this in two slightly
-different ways, depending on whether your plugin has relations *to* or *from*
-other objects that need to be copied too:
+如果你想复制相关的对象，你需要用两种稍微不同的方式来做，这取决于你的插件是否与其他需要复制的对象有关系:
 
 For foreign key relations *from* other objects
+用于从其他对象获取外键关系
 ----------------------------------------------
 
-Your plugin may have items with foreign keys to it, which will typically be
-the case if you set it up so that they are inlines in its admin. So you might
-have two models, one for the plugin and one for those items::
+您的插件可能有带有外键的项，如果您将其设置为其管理中的内联项，则通常会出现这种情况。
+所以你可能有两个模型，一个用于插件，一个用于那些项目:::
 
     class ArticlePluginModel(CMSPlugin):
         title = models.CharField(max_length=50)
@@ -353,9 +292,7 @@ have two models, one for the plugin and one for those items::
             related_name="associated_item"
         )
 
-You'll then need the ``copy_relations()`` method on your plugin model to loop
-over the associated items and copy them, giving the copies foreign keys to the
-new plugin::
+然后你需要插件模型上的``copy_relationships()``方法来循环关联的项并复制它们，给新插件的副本外键::
 
     class ArticlePluginModel(CMSPlugin):
         title = models.CharField(max_length=50)
@@ -374,16 +311,16 @@ new plugin::
                 associated_item.save()
 
 For many-to-many or foreign key relations *to* other objects
+用于与其他对象的多对多或外键关系
 ------------------------------------------------------------
 
-Let's assume these are the relevant bits of your plugin::
+让我们假设这些是插件的相关部分::
 
     class ArticlePluginModel(CMSPlugin):
         title = models.CharField(max_length=50)
         sections = models.ManyToManyField(Section)
 
-Now when the plugin gets copied, you want to make sure the sections stay, so
-it becomes::
+现在，当插件被复制时，你想要确保这些部分保持不变，所以它变成::
 
     class ArticlePluginModel(CMSPlugin):
         title = models.CharField(max_length=50)
@@ -392,17 +329,16 @@ it becomes::
         def copy_relations(self, oldinstance):
             self.sections = oldinstance.sections.all()
 
-If your plugins have relational fields of both kinds, you may of course need
-to use *both* the copying techniques described above.
+如果您的插件具有这两种类型的关系字段，您当然可能需要使用上面描述的两种复制技术。
 
 Relations *between* plugins
 ---------------------------
 
-It is much harder to manage the copying of relations when they are from one plugin to another.
+当关系从一个插件到另一个插件时，管理它们的复制要困难得多。
 
 See the GitHub issue `copy_relations() does not work for relations between cmsplugins #4143
 <https://github.com/divio/django-cms/issues/4143>`_ for more details.
-
+有关更多细节，请参见GitHub问题copy_relations()对cmsplugins #4143 <https://github.com/divio/django-cms/issues/4143>`_ 之间的关系不起作用。
 ********
 Advanced
 ********
@@ -413,6 +349,8 @@ Inline Admin
 If you want to have the foreign key relation as a inline admin, you can create an
 ``admin.StackedInline`` class and put it in the Plugin to "inlines". Then you can use the inline
 admin form for your foreign key references::
+如果希望将外键关系作为内联管理，可以创建一个``admin.StackedInline``类，并把它放在插件的“内联”。
+然后，您可以使用内联管理表单为您的外键引用:
 
     class ItemInlineAdmin(admin.StackedInline):
         model = AssociatedItem
@@ -432,32 +370,27 @@ admin form for your foreign key references::
             })
             return context
 
-Plugin form
+Plugin form 插件形式
 ===========
 
 Since :class:`cms.plugin_base.CMSPluginBase` extends
-:class:`django:django.contrib.admin.ModelAdmin`, you can customise the form
-for your plugins just as you would customise your admin interfaces.
+:class:`django:django.contrib.admin.ModelAdmin`, 
+您可以为插件定制表单，就像定制管理接口一样
 
-The template that the plugin editing mechanism uses is
-``cms/templates/admin/cms/page/plugin/change_form.html``. You might need to
-change this.
+插件编辑机制使用的模板是
+``cms/templates/admin/cms/page/plugin/change_form.html``. 你可能需要改变这一点。
 
-If you want to customise this the best way to do it is:
+如果你想定制这个，最好的方法是:
 
-* create a template of your own that extends ``cms/templates/admin/cms/page/plugin/change_form.html``
-  to provide the functionality you require;
-* provide your :class:`cms.plugin_base.CMSPluginBase` sub-class with a
-  ``change_form_template`` attribute pointing at your new template.
+* 创建自己的模板，扩展 ``cms/templates/admin/cms/page/plugin/change_form.html``
+  以提供所需的功能;
+* 为:class:`cms.plugin_base.CMSPluginBase` sub-class with a
+  ``change_form_template`` 子类提供一个指向新模板的更改表单模板属性。
 
-Extending ``admin/cms/page/plugin/change_form.html`` ensures that you'll keep
-a unified look and functionality across your plugins.
+扩展 ``admin/cms/page/plugin/change_form.html`` 可以确保在插件中保持统一的外观和功能
 
-There are various reasons *why* you might want to do this. For example, you
-might have a snippet of JavaScript that needs to refer to a template
-variable), which you'd likely place in ``{% block extrahead %}``, after a ``{{
-block.super }}`` to inherit the existing items that were in the parent
-template.
+您可能希望这样做的原因有很多。例如，您可能有一个需要引用模板变量的javascript片段，
+您可能会将该片段放在 ``{% block extrahead %}``中，放在``{{block.super }}``之后，以继承父模板中的现有项。
 
 
 .. _custom-plugins-handling-media:
@@ -465,29 +398,23 @@ template.
 Handling media
 ==============
 
-If your plugin depends on certain media files, JavaScript or stylesheets, you
-can include them from your plugin template using `django-sekizai`_. Your CMS
-templates are always enforced to have the ``css`` and ``js`` sekizai namespaces,
-therefore those should be used to include the respective files. For more
-information about django-sekizai, please refer to the
+如果插件依赖于某些媒体文件、JavaScript或样式表，可以使用django-sekizai从插件模板中包含它们。
+CMS模板总是强制使用css和js sekizai名称空间，因此应该使用它们来包含相应的文件。
+有关dango -sekizai的更多信息，请参阅dango -sekizai文档。
 `django-sekizai documentation`_.
 
-Note that sekizai *can't* help you with the *admin-side* plugin templates -
-what follows is for your plugins' *output* templates.
+请注意，sekizai无法帮助您使用管理端插件模板——以下是针对插件输出模板的。
 
 Sekizai style
 -------------
 
-To fully harness the power of django-sekizai, it is helpful to have a consistent
-style on how to use it. Here is a set of conventions that should be followed
-(but don't necessarily need to be):
+为了充分利用dango -sekizai的力量，对如何使用它有一个一致的风格是有帮助的。
+下面是一组应该遵守的约定(但不一定要遵守):
 
-* One bit per ``addtoblock``. Always include one external CSS or JS file per
-  ``addtoblock`` or one snippet per ``addtoblock``. This is needed so
-  django-sekizai properly detects duplicate files.
-* External files should be on one line, with no spaces or newlines between the
-  ``addtoblock`` tag and the HTML tags.
-* When using embedded javascript or CSS, the HTML tags should be on a newline.
+* 每个addtoblock一个位。
+  每个addtoblock总是包含一个外部CSS或JS文件，或者每个addtoblock包含一个代码片段。这是需要的，
+* 外部文件应该在一行中，addtoblock标记和HTML标记之间没有空格或换行。
+* 当使用嵌入式javascript或CSS时，HTML标记应该在换行符上。
 
 A **good** example:
 
@@ -530,8 +457,7 @@ A **bad** example:
 Plugin Context
 ==============
 
-The plugin has access to the django template context. You can override
-variables using the ``with`` tag.
+插件可以访问django模板上下文。您可以使用with标记覆盖变量。
 
 Example::
 
@@ -541,18 +467,16 @@ Example::
 Plugin Context Processors
 =========================
 
-Plugin context processors are callables that modify all plugins' context before
-rendering. They are enabled using the :setting:`CMS_PLUGIN_CONTEXT_PROCESSORS`
-setting.
+插件上下文处理器是可调用的，它在呈现之前修改所有插件的上下文。
+它们是使用``CMS_PLUGIN_CONTEXT_PROCESSORS``设置启用的。
 
-A plugin context processor takes 3 arguments:
+插件上下文处理器有3个参数:
 
-* ``instance``: The instance of the plugin model
-* ``placeholder``: The instance of the placeholder this plugin appears in.
-* ``context``: The context that is in use, including the request.
+* ``instance``: 插件模型的实例
+* ``placeholder``: 此插件的占位符实例出现在。
+* ``context``: 正在使用的上下文，包括请求。
 
-The return value should be a dictionary containing any variables to be added to
-the context.
+返回值应该是一个字典，其中包含要添加到上下文中的任何变量。
 
 Example::
 
@@ -564,34 +488,28 @@ Example::
 
 
 
-Plugin Processors
+Plugin Processors 插件的处理器
 =================
 
-Plugin processors are callables that modify all plugins' output after rendering.
-They are enabled using the :setting:`CMS_PLUGIN_PROCESSORS` setting.
+插件处理器是可调用的，它在呈现后修改所有插件的输出。它们是使用:setting:`CMS_PLUGIN_PROCESSORS`设置启用的。
 
-A plugin processor takes 4 arguments:
+插件处理器有4个参数:
 
-* ``instance``: The instance of the plugin model
-* ``placeholder``: The instance of the placeholder this plugin appears in.
-* ``rendered_content``: A string containing the rendered content of the plugin.
-* ``original_context``: The original context for the template used to render
+* ``instance``: 插件模型的实例
+* ``placeholder``: 此插件的占位符实例出现在
+* ``rendered_content``: 包含插件呈现内容的字符串
+* ``original_context``: 用于呈现插件的模板的原始上下文。
   the plugin.
 
-.. note:: Plugin processors are also applied to plugins embedded in Text
-          plugins (and any custom plugin allowing nested plugins). Depending on
-          what your processor does, this might break the output. For example,
-          if your processor wraps the output in a ``div`` tag, you might end up
-          having ``div`` tags inside of ``p`` tags, which is invalid. You can
-          prevent such cases by returning ``rendered_content`` unchanged if
-          ``instance._render_meta.text_enabled`` is ``True``, which is the case
-          when rendering an embedded plugin.
-
+.. note:: 插件处理器也应用于嵌入到文本插件中的插件(以及任何允许嵌套插件的自定义插件)。
+          根据处理器的操作，这可能会破坏输出。
+          例如，如果您的处理器将输出包装在div标记中，您可能会在p标记中包含div标记，这是无效的
+          如果``instance._render_meta``没有改变返回``rendered_content``，就可以避免这种情况。
+          ``text_enabled``为真，这是呈现嵌入式插件时的情况。
 Example
 -------
 
-Suppose you want to wrap each plugin in the main placeholder in a colored box
-but it would be too complicated to edit each individual plugin's template:
+假设你想把每个插件包在主占位符的一个彩色框中，但是编辑每个插件的模板太复杂了:
 
 In your ``settings.py``::
 
@@ -630,11 +548,10 @@ In your ``yourapp.cms_plugin_processors.py``::
 .. _django-sekizai documentation: https://django-sekizai.readthedocs.io
 
 
-Nested Plugins
+Nested Plugins 嵌套的插件
 ==============
 
-You can nest CMS Plugins in themselves. There's a few things required to
-achieve this functionality:
+您可以将CMS插件嵌套在它们自己中。实现这一功能需要做几件事:
 
 ``models.py``:
 
@@ -708,16 +625,16 @@ achieve this functionality:
 .. _extending_context_menus:
 
 Extending context menus of placeholders or plugins
+扩展占位符或插件的上下文菜单
 ==================================================
 
-There are three possibilities to extend the context menus
-of placeholders or plugins.
+扩展占位符或插件的上下文菜单有三种可能性。
 
-* You can either extend a placeholder context menu.
-* You can extend all plugin context menus.
-* You can extend the current plugin context menu.
+* 您可以扩展占位符上下文菜单。
+* 您可以扩展所有插件上下文菜单。
+* 您可以扩展当前插件上下文菜单。
 
-For this purpose you can overwrite 3 methods on CMSPluginBase.
+为此，您可以在CMSPluginBase上覆盖3个方法。
 
 * :meth:`~cms.plugin_base.CMSPluginBase.get_extra_placeholder_menu_items`
 * :meth:`~cms.plugin_base.CMSPluginBase.get_extra_global_plugin_menu_items`
@@ -807,16 +724,15 @@ Example::
 
 .. _plugin-datamigrations-3.1:
 
-Plugin data migrations
+Plugin data migrations 插件数据迁移
 ======================
 
-Due to the migration from Django MPTT to django-treebeard in version 3.1, the plugin model is
-different between the two versions. Schema migrations are not affected as the migration systems
-(both South and Django) detects the different bases.
+由于3.1版中从Django MPTT迁移到Django -treebeard，这两个版本的插件模型有所不同。
+模式迁移不会受到影响，因为迁移系统(包括South和Django)检测到不同的基础。
 
-Data migrations are a different story, though.
+不过，数据迁移则是另一回事。
 
-If your data migration does something like:
+如果你的数据迁移做了如下事情:
 
 .. code-block:: django
 
@@ -825,14 +741,12 @@ If your data migration does something like:
     for plugin in MyPlugin.objects.all():
         ... do something ...
 
-You may end up with an error like
+您可能会得到像
 ``django.db.utils.OperationalError: (1054, "Unknown column 'cms_cmsplugin.level' in 'field list'")``
-because depending on the order the migrations are executed, the historical models may be out of
-sync with the applied database schema.
+因为根据迁移执行的顺序，历史模型可能与应用的数据库模式不同步
 
-To keep compatibility with 3.0 and 3.x you can force the data migration to run before the django CMS
-migration that creates treebeard fields, by doing this the data migration will always be executed
-on the "old" database schema and no conflict will exist.
+保持与3.0和3的兼容性。您可以强制数据迁移在django CMS迁移之前运行，django CMS迁移创建treebeard字段，
+通过这样做，数据迁移将始终在“旧的”数据库模式上执行，并且不存在冲突。
 
 For South migrations add this:
 
@@ -850,7 +764,7 @@ For South migrations add this:
             ]
 
 
-For Django migrations add this:
+对于Django迁移，请添加以下内容:
 
 .. code-block:: django
 
