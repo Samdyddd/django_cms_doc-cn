@@ -1,5 +1,5 @@
 #####################
-How to manage caching
+How to manage caching 管理缓存
 #####################
 
 
@@ -7,12 +7,12 @@ How to manage caching
 Set-up
 ******
 
-To setup caching configure a caching backend in django.
+要设置缓存，请在django中配置缓存后端。
 
-Details for caching can be found here: https://docs.djangoproject.com/en/dev/topics/cache/
+缓存的详细信息可以在这里找到: https://docs.djangoproject.com/en/dev/topics/cache/
 
-In your middleware settings be sure to add ``django.middleware.cache.UpdateCacheMiddleware`` at the first and
-``django.middleware.cache.FetchFromCacheMiddleware`` at the last position::
+在您的中间件设置中，请确保首先添加了``django.middleware.cache.UpdateCacheMiddleware`` ，其次是
+``django.middleware.cache.FetchFromCacheMiddleware``::
 
     MIDDLEWARE_CLASSES=[
             'django.middleware.cache.UpdateCacheMiddleware',
@@ -30,15 +30,15 @@ Plugins
 
 .. versionadded:: 3.0
 
-Normally all plugins will be cached. If you have a plugin that is dynamic based on the current user or other
-dynamic properties of the request set the ``cache=False`` attribute on the plugin class::
+通常所有插件都会被缓存。
+如果你有一个基于当前用户或请求的其他动态属性的动态插件，请在插件类上设置``cache=False``属性:
 
     class MyPlugin(CMSPluginBase):
         name = _("MyPlugin")
         cache = False
 
 .. warning::
-    If you disable a plugin cache be sure to restart the server and clear the cache afterwards.
+    如果禁用插件缓存，请确保重新启动服务器，并在之后清除缓存。
 
 Content Cache Duration
 ======================
@@ -50,8 +50,7 @@ This can be changed in :setting:`CMS_CACHE_DURATIONS`
 Settings
 ========
 
-Caching is set default to true.
-Have a look at the following settings to enable/disable various caching behaviours:
+缓存默认设置为true。请参考以下设置，以 enable/disable各种缓存行为:
 
 - :setting:`CMS_PAGE_CACHE`
 - :setting:`CMS_PLACEHOLDER_CACHE`

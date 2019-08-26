@@ -1,28 +1,25 @@
 .. _multilingual_support_how_to:
 
 ###############################
-How to serve multiple languages
+How to serve multiple languages  如何服务多种语言
 ###############################
 
-If you used the `django CMS installer <https://github.com/nephila/djangocms-installer>`_ to start your project, you'll find
-that it's already set up for serving multilingual content. Our :ref:`installation` guide also does the same.
+如果您使用django CMS安装程序<https://github.com/nephila/djangocms-installer>`_启动您的项目，您会发现它已经被设置为提供多语言内容。
+我们的如何安装django CMS手动指南也做了同样的事情。
 
-This guide specifically describes the steps required to enable multilingual support, in case you need to it manually.
-
+本指南特别描述了启用多语言支持所需的步骤，以防您需要手动操作。
 
 .. _multilingual_urls:
 
 *****************
-Multilingual URLs
+Multilingual URLs 多语种urls
 *****************
 
-If you use more than one language, django CMS urls, *including the admin URLS*, need to be
-referenced via :func:`~django.conf.urls.i18n.i18n_patterns`. For more information about this see
-the official `Django documentation
-<https://docs.djangoproject.com/en/dev/topics/i18n/translation/#internationalization-in-url-patterns>`_
-on the subject.
+如果使用不止一种语言，则需要通过:func:`~django.conf.urls.i18n.i18n_patterns`引用django CMS url，包括管理url。
+有关此主题的更多信息，请参阅官方Django文档。<https://docs.djangoproject.com/en/dev/topics/i18n/translation/#internationalization-in-url-patterns>`_
 
-Here's a full example of ``urls.py``::
+
+完整示例 ``urls.py``::
 
     from django.conf import settings
     from django.conf.urls import include, url
@@ -45,10 +42,10 @@ Here's a full example of ``urls.py``::
     )
 
 
-Monolingual URLs
+Monolingual URLs 单语的urls
 ================
 
-Of course, if you want only monolingual URLs, without a language code, simply don't use :func:`~django.conf.urls.i18n.i18n_patterns`::
+当然，如果只需要单语url，不需要语言代码，那么就不要使用:func:`~django.conf.urls.i18n.i18n_patterns`:
 
     urlpatterns += [
         url(r'^admin/', admin.site.urls),
@@ -57,26 +54,24 @@ Of course, if you want only monolingual URLs, without a language code, simply do
 
 
 ************************************
-Store the user's language preference
+Store the user's language preference 存储用户的语言首选项
 ************************************
 
-The user's preferred language is maintained through a browsing session. So that django CMS remembers the user's preference in
-subsequent sessions, it must be stored in a cookie. To enable this, ``cms.middleware.language.LanguageCookieMiddleware`` must
-be added to the project's ``MIDDLEWARE_CLASSES`` setting.
+用户的首选语言通过浏览会话来维护。因此django CMS必须存储在cookie中，以便在后续会话中记住用户的首选项。为了支持它,
+必须将``cms.middleware.language.LanguageCookieMiddleware``添加到项目的``MIDDLEWARE_CLASSES``设置中
 
-See :ref:`determining_language_preference` for more information about how this works.
-
+有关如何工作的更多信息，请参见django CMS如何确定使用哪种语言 :ref:`determining_language_preference`。
 
 *********************
 Working in templates
 *********************
 
-Display a language chooser in the page
+在页面中显示语言选择器
 ======================================
 
-The :ttag:`language_chooser` template tag will display a language chooser for the
-current page. You can modify the template in ``menu/language_chooser.html`` or
-provide your own template if necessary.
+:ttag:`language_chooser` 将显示当前页面的语言选择器。 
+您可以在 ``menu/language_chooser.html`` 中修改模板，
+或者在必要时提供自己的模板。
 
 Example:
 
@@ -86,9 +81,8 @@ Example:
     {% language_chooser "myapp/language_chooser.html" %}
 
 
-If you are in an apphook and have a detail view of an object you can
-set an object to the toolbar in your view. The cms will call ``get_absolute_url`` in
-the corresponding language for the language chooser:
+如果您在apphook中，并且拥有对象的详细视图，则可以将对象设置为视图中的工具栏。
+cms将调用``get_absolute_url``在相应的语言为语言选择器:
 
 Example:
 
@@ -103,18 +97,18 @@ Example:
             return response
 
 
-With this you can more easily control what url will be returned on the language chooser.
+有了它，您可以更容易地控制将在语言选择器上返回什么url。
 
 .. note::
 
-    If you have a multilingual objects be sure that you return the right url if you don't have
-    a translation for this language in ``get_absolute_url``
+    如果您有一个多语言对象，如果在``get_absolute_url``中没有该语言的翻译，请确保返回正确的url
 
 
 Get the URL of the current page for a different language
+获取用于不同语言的当前页面的URL
 ========================================================
 
-The ``page_language_url`` returns the URL of the current page in another language.
+The ``page_language_url`` 将当前页面的URL转换为另一种语言
 
 Example:
 
@@ -125,10 +119,10 @@ Example:
 
 ***************************************
 Configuring language-handling behaviour
+配置language-handling行为
 ***************************************
 
-:setting:`CMS_LANGUAGES` describes the all options available for determining how django CMS serves content across multiple
-languages.
+:setting:`CMS_LANGUAGES`描述了用于确定django CMS如何跨多种语言提供内容的所有选项。
 
 
 .. _documentation: https://docs.djangoproject.com/en/dev/topics/i18n/translation/#internationalization-in-url-patterns

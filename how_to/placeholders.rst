@@ -1,27 +1,22 @@
 .. _placeholders_outside_cms:
 
 #######################################
-How to use placeholders outside the CMS
+How to use placeholders outside the CMS 如何在CMS之外使用占位符
 #######################################
 
-Placeholders are special model fields that django CMS uses to render
-user-editable content (plugins) in templates. That is, it's the place where a
-user can add text, video or any other plugin to a webpage, using the same
-frontend editing as the CMS pages.
+占位符是django CMS用来在模板中呈现用户可编辑内容(插件)的特殊模型字段。
+也就是说，它是一个地方，用户可以添加文本，视频或任何其他插件到一个网页，
+使用相同的前端编辑作为CMS页面。
 
-Placeholders can be viewed as containers for :class:`~cms.models.pluginmodel.CMSPlugin` instances, and
-can be used outside the CMS in custom applications using the
-:class:`~cms.models.fields.PlaceholderField`.
+占位符可以看作CMSPlugin实例的容器，并且可以在CMS之外使用占位符字段在定制应用程序中使用。
 
-By defining one (or several) :class:`~cms.models.fields.PlaceholderField` on a
-custom model you can take advantage of the full power of :class:`~cms.models.pluginmodel.CMSPlugin`.
+通过在自定义模型上定义一个(或多个)PlaceholderField，您可以充分利用CMSPlugin的强大功能。
 
 ***********
 Get started
 ***********
 
-You need to define a :class:`~cms.models.fields.PlaceholderField` on the model you would like to
-use::
+你需要在你想要使用的模型上定义一个PlaceholderField::
 
     from django.db import models
     from cms.models.fields import PlaceholderField
@@ -32,13 +27,12 @@ use::
         # your methods
 
 
-The :class:`~cms.models.fields.PlaceholderField` has one required parameter, a string ``slotname``.
+PlaceholderField有一个必需的参数，一个字符串``slotname``。
 
-The ``slotname`` is used in templates, to determine where the placeholder's plugins should appear
-in the page, and in the placeholder configuration :setting:`CMS_PLACEHOLDER_CONF`, which determines
-which plugins may be inserted into this placeholder.
+``slotname`` 用于模板中，用于确定占位符的插件应该出现在页面的哪个位置，
+以及在占位符配置``CMS_PLACEHOLDER_CONF``中，``CMS_PLACEHOLDER_CONF``确定可以将哪些插件插入到这个占位符中。
 
-You can also use a callable for the ``slotname``, as in::
+您还可以对``slotname``使用可调用的参数，如:
 
     from django.db import models
     from cms.models.fields import PlaceholderField
@@ -53,30 +47,26 @@ You can also use a callable for the ``slotname``, as in::
 
 .. warning::
 
-    For security reasons the related_name for a
-    :class:`~cms.models.fields.PlaceholderField` may not be suppressed using
-    ``'+'``; this allows the cms to check permissions properly. Attempting to do
-    so will raise a :exc:`ValueError`.
+    出于安全原因，占位符字段的related_name不能使用``“+”``来禁止;这允许cms正确地检查权限。
+    尝试这样做将会引发``ValueError``错误。
 
 .. note::
 
-    If you add a PlaceholderField to an existing model, you'll be able to see
-    the placeholder in the frontend editor only after saving the relevant instance.
+    如果将PlaceholderField添加到现有模型中，则只有在保存相关实例之后，才能在frontend编辑器中看到占位符。
 
-Admin Integration
+Admin Integration 管理集成
 =================
 
 .. versionchanged:: 3.0
 
-Your model with ``PlaceholderFields`` can still be edited in the admin. However, any
-PlaceholderFields in it will **only be available for editing from the frontend**.
-``PlaceholderFields`` **must** not be present in any ``fieldsets``, ``fields``, ``form`` or other
-``ModelAdmin`` field's definition attribute.
+您的带有PlaceholderFields的模型仍然可以在管理中编辑。
+但是，其中的任何placeholderfield都只能从前端进行编辑。
+PlaceholderFields不能出现在任何字段集、字段、表单或其他ModelAdmin字段的定义属性中。
 
-To provide admin support for a model with a ``PlaceholderField`` in your application's admin, you
-need to use the mixin :class:`~cms.admin.placeholderadmin.PlaceholderAdminMixin` along with the
-:class:`~django.contrib.admin.ModelAdmin`. Note that the ``PlaceholderAdminMixin`` **must** precede
-the ``ModelAdmin`` in the class definition::
+要在应用程序的管理中为带有``PlaceholderField``的模型提供管理支持，
+您需要使用mixin PlaceholderAdminMixin :class:`~cms.admin.placeholderadmin.PlaceholderAdminMixin`
+和ModelAdmin :class:`~django.contrib.admin.ModelAdmin。
+注意，PlaceholderAdminMixin必须在类定义的``ModelAdmin``之前::
 
     from django.contrib import admin
     from cms.admin.placeholderadmin import PlaceholderAdminMixin
@@ -87,17 +77,15 @@ the ``ModelAdmin`` in the class definition::
 
     admin.site.register(MyModel, MyModelAdmin)
 
-I18N Placeholders
+I18N Placeholders 国际化占位符
 =================
 
-Out of the box :class:`~cms.admin.placeholderadmin.PlaceholderAdminMixin` supports multiple
-languages and will display language tabs. If you extend your model admin class derived from
-``PlaceholderAdminMixin`` and overwrite ``change_form_template`` have a look at
-``admin/placeholders/placeholder/change_form.html`` to see how to display the language tabs.
+ :class:`~cms.admin.placeholderadmin.PlaceholderAdminMixin` 支持多种语言，并将显示语言选项卡。
+如果扩展从 ``PlaceholderAdminMixin`` 派生的模型管理类并覆盖``change_form_template``，请查看
+``admin/placeholders/placeholder/change_form.html`` 何显示语言选项卡。
 
-If you need other fields translated as well, django CMS has support for `django-hvad`_. If you use
-a ``TranslatableModel`` model be sure to **not** include the placeholder fields amongst the
-translated fields::
+如果需要翻译其他字段，django CMS支持`django-hvad`_。如果使用 ``TranslatableModel``模型，
+请确保在翻译的字段中不包含占位符字段:
 
     class MultilingualExample1(TranslatableModel):
         translations = TranslatedFields(
@@ -109,8 +97,7 @@ translated fields::
         def __unicode__(self):
             return self.title
 
-Be sure to combine both hvad's ``TranslatableAdmin`` and :class:`~cms.admin.placeholderadmin.PlaceholderAdminMixin` when
-registering your model with the admin site::
+在向管理站点注册模型时，务必结合 hvad's ``TranslatableAdmin`` and :class:`~cms.admin.placeholderadmin.PlaceholderAdminMixin` ::
 
     from cms.admin.placeholderadmin import PlaceholderAdminMixin
     from django.contrib import admin
@@ -125,8 +112,7 @@ registering your model with the admin site::
 Templates
 =========
 
-To render the placeholder in a template you use the :ttag:`render_placeholder` tag from the
-:mod:`~cms.templatetags.cms_tags` template tag library:
+要在模板中呈现占位符，可以使用:mod:`~cms.templatetags.cms_tags`模板标记库中的:ttag:`render_placeholder`标记:
 
 .. code-block:: html+django
 
@@ -134,16 +120,15 @@ To render the placeholder in a template you use the :ttag:`render_placeholder` t
 
     {% render_placeholder mymodel_instance.my_placeholder "640" %}
 
-The :ttag:`render_placeholder` tag takes the following parameters:
+The :ttag:`render_placeholder` 标签接受以下参数:
 
 * :class:`~cms.models.fields.PlaceholderField` instance
 * ``width`` parameter for context sensitive plugins (optional)
 * ``language`` keyword plus ``language-code`` string to render content in the
   specified language (optional)
 
-The view in which you render your placeholder field must return the
-:class:`request <django.http.HttpRequest>` object in the context. This is
-typically achieved in Django applications by using :class:`~django.template.RequestContext`::
+呈现占位符字段的视图必须在上下文中返回请求对象:class:`request <django.http.HttpRequest>`。
+这通常是在Django应用程序中使用:class:`~django.template.RequestContext`实现的:
 
     from django.shortcuts import get_object_or_404, render
 
@@ -153,8 +138,7 @@ typically achieved in Django applications by using :class:`~django.template.Requ
             'object': object,
         })
 
-If you want to render plugins from a specific language, you can use the tag
-like this:
+如果你想渲染来自特定语言的插件，你可以这样使用标签:
 
 .. code-block:: html+django
 
@@ -168,65 +152,61 @@ Adding content to a placeholder
 
 .. versionchanged:: 3.0
 
-Placeholders can be edited from the frontend by visiting the page displaying your model (where you
-put the :ttag:`render_placeholder` tag), then appending ``?edit`` to the page's URL.
+占位符可以通过访问显示模型的页面(放置:ttag:`render_placeholder`标记的位置)，
+然后将``?edit``附加到页面的URL中，从而从前端编辑占位符。
 
-This will make the frontend editor top banner appear (and if necessary will require you to login).
+这将使前端编辑器顶部横幅出现(如果需要，将要求您登录)。
 
-Once in frontend editing mode, the interface for your application's ``PlaceholderFields`` will work
-in much the same way as it does for CMS Pages, with a switch for Structure and Content modes and so
-on.
+一旦进入前端编辑模式，应用程序的``PlaceholderFields``接口的工作方式将与CMS页面的工作方式大致相同，
+只是需要切换结构和内容模式等等
 
-There is no automatic draft/live functionality for general Django models, so content is updated
-instantly whenever you add/edit them.
+一般Django模型没有自动的draft/live功能，所以只要add/edit它们，内容就会立即更新。
 
 Options
 =======
 
-If you need to change ``?edit`` to a custom string (say, ``?admin_on``) you may
-set ``CMS_TOOLBAR_URL__EDIT_ON`` variable in your ``settings.py`` to
-``"admin_on"``.
+如果需要将 ``?edit`` 可以将(say, ``?admin_on``) 自定义字符串 ,
+ 在``settings.py`` 中的``CMS_TOOLBAR_URL__EDIT_ON`` 变量设置为``"admin_on"``.
 
-You may also change other URLs with similar settings:
+你也可以改变其他URLs与类似的设置::
 
 * ``?edit_off`` (``CMS_TOOLBAR_URL__EDIT_OFF``)
 * ``?build`` (``CMS_TOOLBAR_URL__BUILD``)
 * ``?toolbar_off`` (``CMS_TOOLBAR_URL__DISABLE``)
 
-When changing these settings, please be careful because you might inadvertently replace reserved
-strings in system (such as ``?page``). We recommended you use safely unique strings for this option
+更改这些设置时，请小心，因为您可能无意中替换了系统中保留的字符串 (such as ``?page``).
+我们建议您为这个选项使用安全的惟一字符串
 (such as ``secret_admin`` or ``company_name``).
 
 .. _placeholder_object_permissions:
 
-Permissions
+Permissions 权限
 ===========
 
 To be able to edit a placeholder user must be a ``staff`` member and needs either edit permissions
 on the model that contains the :class:`~cms.models.fields.PlaceholderField`, or permissions for
 that specific instance of that model. Required permissions for edit actions are:
+要能够编辑占位符用户，必须是工作人员``staff`` member ，
+并且需要包含占位符字段:class:`~cms.models.fields.PlaceholderField`的模型的编辑权限，
+或者该模型的特定实例的权限。编辑操作所需的权限是:
 
-* to ``add``: require ``add`` **or** ``change`` permission on related Model or instance.
-* to ``change``: require ``add`` **or** ``change`` permission on related Model or instance.
-* to ``delete``: require ``add`` **or** ``change`` **or** ``delete`` permission on related Model
-  or instance.
+* to ``add``: require ``add`` **or** ``change`` 对相关模型或实例的权限.
+* to ``change``: require ``add`` **or** ``change`` 对相关模型或实例的权限。
+* to ``delete``: require ``add`` **or** ``change`` **or** ``delete`` 对相关模型或实例的权限。
 
-With this logic, an user who can ``change`` a Model's instance but can not ``add`` a new
-Model's instance will be able to add some placeholders or plugins to existing Model's instances.
+使用这种逻辑，可以更改模型实例但不能添加新模型实例的用户将能够向现有模型的实例添加一些占位符或插件。
 
-Model permissions are usually added through the default Django ``auth`` application and its admin
-interface. Object-level permission can be handled by writing a custom authentication backend as
-described in `django docs
+模型权限通常通过缺省Django auth应用程序及其管理界面添加。对象级权限可以通过编写自定义身份验证后端来处理，
+如django文档中所述 `django docs
 <https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions>`_
 
-For example, if there is a ``UserProfile`` model that contains a ``PlaceholderField`` then the
-custom backend can refer to a ``has_perm`` method (on the model) that grants all rights to current
-user only based on the user's ``UserProfile`` object::
+例如，如果有一个``UserProfile``模型包含一个``PlaceholderField``，那么自定义后端可以引用一个``has_perm``方法(在模型上)，
+该方法仅根据用户的``UserProfile``对象将所有权限授予当前用户::
 
     def has_perm(self, user_obj, perm, obj=None):
         if not user_obj.is_staff:
             return False
-        if isinstance(obj, UserProfile):
+        if isinstance(obj, UserProfile): 
             if user_obj.get_profile()==obj:
                 return True
         return False
