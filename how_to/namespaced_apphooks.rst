@@ -5,21 +5,22 @@ How to manage complex apphook configuration
 如何管理复杂的apphook配置
 ###########################################
 
-In :ref:`apphooks_how_to` we discuss some basic points of using apphooks. In this document we will cover some more
-complex implementation possibilities.
+在如何创建 :ref:`apphooks_how_to` 我们讨论了使用apphook的一些基本要点。
+在本文档中，我们将介绍一些更复杂的实现可能性。
 
 
 .. _multi_apphook:
 
 ***************************************
 Attaching an application multiple times
+多次附加应用程序
 ***************************************
 
 Define a namespace at class-level
+在类级定义名称空间
 =================================
 
-If you want to attach an application multiple times to different pages, then the class defining the apphook *must*
-have an ``app_name`` attribute::
+如果您想将应用程序多次附加到不同的页面，那么定义apphook的类必须具有``app_name``属性:
 
     class MyApphook(CMSApp):
         name = _("My Apphook")
@@ -30,38 +31,33 @@ have an ``app_name`` attribute::
 
 The ``app_name`` does three key things:
 
-* It provides the *fallback namespace* for views and templates that reverse URLs.
-* It exposes the *Application instance name* field in the page admin when applying an apphook.
-* It sets the *default apphook instance name* (which you'll see in the *Application instance name* field).
+* 它为反向url的视图和模板提供回退名称空间。
+* 当应用apphook时，它在页面管理中公开应用程序实例名字段。
+* 它设置了默认的apphook实例名(您将在应用程序实例名字段中看到)。
 
-We'll explain these with an example. Let's suppose that your application's views or templates use
+我们将用一个例子来解释这些。假设应用程序的视图或模板使用
 ``reverse('myapp:index')`` or ``{% url 'myapp:index' %}``.
 
-In this case the namespace of any apphooks you apply must match ``myapp``. If they don't, your pages using them will
-throw up a ``NoReverseMatch`` error.
+在这种情况下，您应用的任何apphooks的名称空间都必须匹配myapp。如果没有，使用它们的页面将抛出``NoReverseMatch``错误。
 
-You can set the namespace for the instance of the apphook in the *Application instance name* field. However, you'll
-need to set that to something *different* if an instance with that value already exists. In this case, as long as
-``app_name = "myapp"`` it doesn't matter; even if the system doesn't find a match with the name of the instance it will
-fall back to the one hard-wired into the class.
+您可以在应用程序实例名称字段中为apphook实例设置名称空间。但是，如果已经存在具有该值的实例，则需要将其设置为不同的值。
+在本例中，只要``app_name = "myapp"``就可以了;即使系统没有找到与实例名称匹配的实例，它也会返回到硬连接到类中的实例。
 
-In other words setting ``app_name`` correctly guarantees that URL-reversing will work, because it sets the fallback
-namespace appropriately.
+换句话说，正确地设置``app_name``可以确保url反转能够工作，因为它正确地设置了回退名称空间。
 
 
 Set a namespace at instance-level
+在实例级设置名称空间
 =================================
 
-On the other hand, the *Application instance name* will override the ``app_name`` *if* a match is found.
+另一方面，如果找到匹配项，应用程序实例名将覆盖``app_name``。
 
-This arrangement allows you to use multiple application instances and namespaces if that flexibility is required, while
-guaranteeing a simple way to make it work when it's not.
+这种安排允许您在需要灵活性的情况下使用多个应用程序实例和名称空间，同时确保在不需要的情况下使用一种简单的方法使其工作。
 
-Django's :ref:`django:topics-http-reversing-url-namespaces` documentation provides more information on how this works,
-but the simplified version is:
+Django's :ref:`django:topics-http-reversing-url-namespaces`的反向命名空间url文档提供了更多关于如何工作的信息，但是简化版是:
 
-1. First, it'll try to find a match for the *Application instance name*.
-2. If it fails, it will try to find a match for the ``app_name``.
+1. First, 它将尝试为应用程序实例名找到匹配项.
+2. 如果失败，它将尝试为 ``app_name``找到匹配项。
 
 
 .. _apphook_configurations:
@@ -70,65 +66,62 @@ but the simplified version is:
 Apphook configurations
 **********************
 
-Namespacing your apphooks also makes it possible to manage additional database-stored apphook configuration, on an
-instance-by-instance basis.
+命名空间您的apphook还可以管理额外的数据库存储apphook配置，以实例为基础。
 
 
 Basic concepts
+基本概念
 ==============
 
-To capture the configuration that different instances of an apphook can take, a Django model needs to be created - each
-apphook instance will be an instance of that model, and administered through the Django admin in the usual way.
+为了捕获apphook的不同实例可以接受的配置，
+需要创建Django模型——每个apphook实例都是该模型的一个实例，并通过Django管理员以通常的方式进行管理
 
-Once set up, an apphook configuration can be applied to to an apphook instance, in the *Advanced settings* of the page
-the apphook instance belongs to:
+一旦设置好，apphook配置可以应用于apphook实例，在apphook实例所属页面的高级设置中:
 
 .. image:: /how_to/images/select_apphook_configuration.png
    :alt: selecting an apphook configuration application
    :width: 400
    :align: center
 
-The configuration is then loaded in the application's views for that namespace, and will be used to determined how it
-behaves.
+然后在应用程序的视图中加载该名称空间的配置，并将用于确定它的行为方式。
 
-Creating an application configuration in fact creates an apphook instance namespace. Once created, the namespace of a
-configuration cannot be changed - if a different namespace is required, a new configuration will also need to be
-created.
+创建应用程序配置实际上创建了一个apphook实例名称空间。
+一旦创建，配置的名称空间就不能更改——如果需要不同的名称空间，还需要创建新的配置。
 
 
 ********************************
 An example apphook configuration
+一个apphook配置示例
 ********************************
 
-In order to illustrate how this all works, we'll create a new FAQ application, that provides a simple list
-of questions and answers, together with an apphook class and an apphook configuration model that allows it to
-exist in multiple places on the site in multiple configurations.
+为了说明这一切是如何工作的，我们将创建一个新的FAQ应用程序，它提供一个简单的问题和答案列表，
+以及一个apphook类和一个apphook配置模型，该模型允许它以多种配置存在于站点的多个位置。
 
-We'll assume that you have a working django CMS project running already.
+我们假设您已经运行了一个django CMS项目。
 
 Using helper applications
+使用辅助应用程序
 =========================
 
-We'll use a couple of simple helper applications for this example, just to make our work easier.
+在本例中，我们将使用几个简单的helper应用程序，以简化我们的工作。
 
 
 Aldryn Apphooks Config
 ----------------------
 
-`Aldryn Apphooks Config <https://github.com/aldryn/aldryn-apphooks-config>`_ is a helper application that makes it
-easier to develop configurable apphooks. For example, it provides an ``AppHookConfig`` for you to subclass, and other
-useful components to save you time.
+`Aldryn Apphooks Config <https://github.com/aldryn/aldryn-apphooks-config>`_ 是一个帮助应用程序，它使开发可配置的Apphooks变得更容易。
+例如，它为您提供了一个AppHookConfig来子类化，以及其他有用的组件来节省您的时间。
 
-In this example, we'll use Aldryn Apphooks Config, as we recommend it. However, you don't have to use it in your own
-projects; if you prefer to can build the code you require by hand.
+在本例中，我们将按照我们的建议使用Aldryn Apphooks配置。但是，您不必在自己的项目中使用它;如果您愿意，可以手工构建所需的代码。
 
 Use ``pip install aldryn-apphooks-config`` to install it.
 
-Aldryn Apphooks Config in turn installs `Django AppData <https://github.com/ella/django-appdata>`_, which provides an
-elegant way for an application to extend another; we'll make use of this too.
+Aldryn Apphooks配置依次安装`Django AppData <https://github.com/ella/django-appdata>`_，
+这为应用程序扩展另一个应用程序提供了一种优雅的方式;我们也会利用这个。
 
 
 Create the new FAQ application
+创建新的FAQ应用程序
 ==============================
 
 .. code-block:: shell
@@ -162,12 +155,11 @@ Create the FAQ ``Entry`` model
         class Meta:
             verbose_name_plural = 'entries'
 
-The ``app_config`` field is a ``ForeignKey`` to an apphook configuration model; we'll create it in a moment. This model
-will hold the specific namespace configuration, and makes it possible to assign each FAQ Entry to a namespace.
+The ``app_config`` field is a ``ForeignKey`` to an apphook configuration model;
+app_config字段是apphook配置模型的外键;我们马上就会创建它。
+此模型将保存特定的名称空间配置，并使将每个FAQ条目分配到名称空间成为可能。
 
-The custom ``AppHookConfigManager`` is there to make it easy to filter the queryset of ``Entries`` using a convenient
-shortcut: ``Entry.objects.namespace('foobar')``.
-
+有了自定义``AppHookConfigManager`` ，可以使用方便的快捷方式过滤queryset条目``Entry.objects.namespace('foobar')``.
 
 Define the AppHookConfig subclass
 ---------------------------------
@@ -196,23 +188,20 @@ In a new file ``cms_appconfig.py`` in the FAQ application:
         title = forms.CharField()
     setup_config(FaqConfigForm, FaqConfig)
 
-The implementation *can* be left completely empty, as the minimal schema is already defined in
-the abstract parent model provided by Aldryn Apphooks Config.
+实现可以完全空，因为最小模式已经在Aldryn Apphooks配置提供的抽象父模型中定义。
 
-Here though we're defining an extra field on model, ``paginate_by``. We'll use it later
-to control how many entries should be displayed per page.
+这里我们在model上定义了一个额外的字段 ``paginate_by``。稍后我们将使用它来控制每个页面应该显示多少条目。
 
-We also set up a ``FaqConfigForm``, which uses ``AppDataForm`` to add a field to ``FaqConfig`` without actually
-touching its model.
+我们还设置了一个 ``FaqConfigForm``, 它使用AppDataForm向FaqConfig添加一个字段，而不需要实际接触它的模型。
 
-The title field could also just be a model field, like ``paginate_by``. But we're using the AppDataForm to demonstrate
-this capability.
+title字段也可以只是一个模型字段，比如paginate_by。但是我们使用AppDataForm来演示这个功能
 
 
 Define its admin properties
+定义它的管理属性
 ---------------------------
 
-In ``admin.py`` we need to define all fields we'd like to display:
+In ``admin.py`` 我们需要定义所有要显示的字段:
 
 .. code-block:: python
 
@@ -242,14 +231,13 @@ In ``admin.py`` we need to define all fields we'd like to display:
             )
     admin.site.register(FaqConfig, FaqConfigAdmin)
 
-``get_config_fields`` defines the fields that should be displayed. Any fields
-using the AppData forms need to be prefixed by ``config.``.
+``get_config_fields`` d定义应该显示的字段。使用AppData表单的任何字段都需要使用 ``config.``.
 
 
 Define the apphook itself
 -------------------------
 
-Now let's create the apphook, and set it up with support for multiple instances. In ``cms_apps.py``:
+现在让我们创建apphook，并将其设置为支持多个实例. In ``cms_apps.py``:
 
 .. code-block:: python
 
@@ -268,10 +256,10 @@ Now let's create the apphook, and set it up with support for multiple instances.
 
 
 Define a list view for FAQ entries
+为FAQ条目定义一个列表视图
 ----------------------------------
 
-We have all the basics in place. Now we'll add a list view for the FAQ entries
-that only displays entries for the currently used namespace. In ``views.py``:
+我们已经准备好了所有的基础设施。现在，我们将为FAQ条目添加一个列表视图，它只显示当前使用名称空间的条目. In ``views.py``:
 
 .. code-block:: python
 
@@ -295,19 +283,16 @@ that only displays entries for the currently used namespace. In ``views.py``:
                 return 10
 
 
-``AppConfigMixin`` saves you the work of setting any attributes in your view - it automatically sets, for the view
-class instance:
+``AppConfigMixin`` 为您节省了在视图中设置任何属性的工作——它会自动设置视图类实例:
 
-* current namespace in ``self.namespace``
-* namespace configuration (the instance of FaqConfig) in ``self.config``
-* current application in the ``current_app parameter`` passed to the
-  ``Response`` class
+* 中的当前名称空间``self.namespace``
+* 名称空间配置(FaqConfig的实例) in ``self.config``
+* 传递给 in the ``current_app parameter`` 传递给 ``Response`` class
 
-In this case we're filtering to only show entries assigned to the current
-namespace in ``get_queryset``. ``qs.namespace``, thanks to the model manager we defined earlier, is the equivalent of
-``qs.filter(app_config__namespace=self.namespace)``.
+在本例中，我们只筛选``get_queryset``中分配给当前名称空间的条目.
+由于前面定义的模型管理器，``qs.namespace``相当于``qs.filter(app_config__namespace=self.namespace)``.
 
-In ``get_paginate_by`` we use the value from our appconfig model.
+In ``get_paginate_by`` 我们使用appconfig模型中的值.
 
 
 Define a template
@@ -372,7 +357,7 @@ URLconf
 Put it all together
 ===================
 
-Finally, we add ``faq`` to ``INSTALLED_APPS``, then create and run migrations:
+Finally, we add ``faq`` to ``INSTALLED_APPS``, 然后创建并运行迁移:
 
 .. code-block:: shell
 
@@ -381,8 +366,6 @@ Finally, we add ``faq`` to ``INSTALLED_APPS``, then create and run migrations:
 
 Now we should be all set.
 
-Create two pages with the ``faq`` apphook (don't forget to publish them), with different namespaces and different
-configurations. Also create some entries assigned to the two namespaces.
+使用faq apphook创建两个页面(不要忘记发布它们)，使用不同的名称空间和不同的配置。还创建一些分配给两个名称空间的条目。
 
-You can experiment with the different configured behaviours (in this case, only pagination is available), and the way
-that different ``Entry`` instances can be associated with a specific apphook.
+您可以尝试不同的配置行为(在本例中，只有分页可用)，以及不同条目实例与特定apphook关联的方式。
