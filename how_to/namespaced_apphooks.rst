@@ -2,6 +2,7 @@
 
 ###########################################
 How to manage complex apphook configuration
+如何管理复杂的apphook配置
 ###########################################
 
 In :ref:`apphooks_how_to` we discuss some basic points of using apphooks. In this document we will cover some more
