@@ -1,15 +1,15 @@
 #################################
 How to customise navigation menus
+如何定义导航菜单
 #################################
 
-In this document we discuss three different way of customising the navigation
-menus of django CMS sites.
+在本文中，我们讨论了定制django CMS站点导航菜单的三种不同方法
 
-1. :ref:`integration_menus`: Statically extend the menu entries
+1. :ref:`integration_menus`: 静态地扩展菜单项
 
-2. :ref:`integration_attach_menus`: Attach your menu to a page.
+2. :ref:`integration_attach_menus`: 将菜单附加到页面上。
 
-3. :ref:`integration_modifiers`: Modify the whole menu tree
+3. :ref:`integration_modifiers`: 修改整个菜单树
 
 .. _integration_menus:
 
@@ -17,7 +17,7 @@ menus of django CMS sites.
 Menus
 *****
 
-Create a ``cms_menus.py`` in your application, with the following::
+创建 ``cms_menus.py`` 文件，如下所示::
 
     from menus.base import Menu, NavigationNode
     from menus.menu_pool import menu_pool
@@ -39,52 +39,47 @@ Create a ``cms_menus.py`` in your application, with the following::
 
     menu_pool.register_menu(TestMenu)
 
-.. note:: Up to version 3.1 this module was named ``menu.py``. Please
-          update your existing modules to the new naming convention.
-          Support for the old name will be removed in version 3.5.
+.. note:: 在3.1版本之前，这个模块名为menu.py。
+          请将现有模块更新为新的命名约定。3.5版将删除对旧名称的支持。
 
-If you refresh a page you should now see the menu entries above.
-The ``get_nodes`` function should return a list of
-:class:`NavigationNode <menus.base.NavigationNode>` instances. A
-:class:`menus.base.NavigationNode` takes the following arguments:
+如果刷新一个页面，现在应该可以看到上面的菜单项。
+``get_nodes``函数应该返回:class:`NavigationNode <menus.base.NavigationNode>`实例列表。
+:class:`menus.base.NavigationNode`接受以下参数:
 
 ``title``
-  Text for the menu node
+  菜单节点的文本
 
 ``url``
-  URL for the menu node link
+  菜单节点链接的URL
 
 ``id``
-  A unique id for this menu
+  此菜单的唯一id
 
 ``parent_id=None``
-  If this is a child of another node, supply the id of the parent here.
+  如果这是另一个节点的子节点，则在这里提供父节点的id。
 
 ``parent_namespace=None``
-  If the parent node is not from this menu you can give it the parent
-  namespace. The namespace is the name of the class. In the above example that
-  would be: ``TestMenu``
+  如果父节点不在此菜单中，则可以为其提供父名称空间。名称空间是类的名称。
+  在上面的例子中是: ``TestMenu``
 
 ``attr=None``
-  A dictionary of additional attributes you may want to use in a modifier or
-  in the template
+  您可能希望在修饰符或模板中使用的附加属性的字典
 
 ``visible=True``
-  Whether or not this menu item should be visible
+  此菜单项是否应可见
 
-Additionally, each :class:`menus.base.NavigationNode` provides a number of methods which are
-detailed in the :class:`NavigationNode <menus.base.NavigationNode>` API references.
-
+另外,每个:class:`menus.base.NavigationNode`提供了许多方法，
+这些方法在:class:`NavigationNode <menus.base.NavigationNode>` API引用中有详细说明。
 
 Customise menus at runtime
+在运行时定制菜单
 ==========================
 
-To adapt your menus according to request dependent conditions (say: anonymous/logged in user), you
-can use `Navigation Modifiers`_ or you can make use of existing ones.
+要根据依赖于请求的条件(例如:anonymous/logged(匿名/登录用户))调整菜单，可以使用`Navigation Modifiers`_导航修饰符，
+也可以使用现有的修饰符。
 
-For example it's possible to add ``{'visible_for_anonymous':
-False}``/``{'visible_for_authenticated': False}`` attributes recognised by the django CMS core
-``AuthVisibility`` modifier.
+：例如，可以添加由django CMS核心 ``AuthVisibility``修饰符识别的``{'visible_for_anonymous':
+False}``/``{'visible_for_authenticated': False}``属性
 
 Complete example::
 
@@ -102,16 +97,15 @@ Complete example::
 
 ************
 Attach Menus
+附加菜单
 ************
 
-Classes that extend from :class:`menus.base.Menu` always get attached to the
-root. But if you want the menu to be attached to a CMS Page you can do that as
-well.
+扩展自:class:`menus.base.Menu`的类。菜单总是附加到根目录。但如果你想要菜单附加到CMS页面，你也可以这样做
 
-Instead of extending from :class:`~menus.base.Menu` you need to extend from
-:class:`cms.menu_bases.CMSAttachMenu` and you need to define a name.
+您需要从:class:`~menus.base.Menu`扩展而不是从菜单扩展。
+:class:`cms.menu_bases.CMSAttachMenu`，您需要定义一个名称。
 
-We will do that with the example from above::
+我们将用上面的例子来做::
 
     from menus.base import NavigationNode
     from menus.menu_pool import menu_pool
@@ -136,51 +130,43 @@ We will do that with the example from above::
 
     menu_pool.register_menu(TestMenu)
 
-Now you can link this Menu to a page in the *Advanced* tab of the page
-settings under attached menu.
+现在，您可以将此菜单链接到“附加菜单下的页面设置”的“高级”选项卡中的页面。
 
 
 .. _integration_modifiers:
 
 ********************
 Navigation Modifiers
+导航修饰符
 ********************
 
-Navigation Modifiers give your application access to navigation menus.
-
-A modifier can change the properties of existing nodes or rearrange entire
-menus.
+导航修饰符使应用程序可以访问导航菜单。
+修饰符可以更改现有节点的属性或重新排列整个菜单。
 
 
 Example use-cases
 =================
 
-A simple example: you have a news application that publishes pages
-independently of django CMS. However, you would like to integrate the
-application into the menu structure of your site, so that at appropriate
-places a *News* node appears in the navigation menu.
+一个简单的例子:您有一个新闻应用程序，它独立于django CMS发布页面。
+但是，您希望将应用程序集成到站点的菜单结构中，以便在导航菜单中出现一个新闻节点。
 
-In another example, you might want a particular attribute of your ``Pages`` to be available in
-menu templates. In order to keep menu nodes lightweight (which can be important in a site with
-thousands of pages) they only contain the minimum attributes required to generate a usable menu.
+在另一个示例中，您可能希望页面的特定属性在菜单模板中可用。
+为了保持菜单节点的轻量级(这在拥有数千个页面的站点中可能很重要)，
+它们只包含生成可用菜单所需的最小属性。
 
-In both cases, a Navigation Modifier is the solution - in the first case, to add a new node at the
-appropriate place, and in the second, to add a new attribute - on the ``attr`` attribute, rather
-than directly on the ``NavigationNode``, to help avoid conflicts - to all nodes in the menu.
+在这两种情况下,一个导航修改器解决方案——在第一种情况下,在适当的地方添加一个新节点,第二,添加一个新的属性——attr属性,
+而不是直接NavigationNode,帮助避免利益冲突——菜单中的所有节点。
 
 How it works
 ============
 
-Place your modifiers in your application's ``cms_menus.py``.
+将修饰符放在应用程序的 ``cms_menus.py``.
 
-To make your modifier available, it then needs to be registered with
-``menus.menu_pool.menu_pool``.
+要使修饰符可用，则需要在``menus.menu_pool.menu_pool``中注册它。
 
-Now, when a page is loaded and the menu generated, your modifier will
-be able to inspect and modify its nodes.
+现在，当页面加载并生成菜单时，您的修饰符将能够检查和修改它的节点。
 
-Here is an example of a simple modifier that places each Page's ``changed_by`` attribute in the corresponding
-``NavigationNode``::
+下面是一个简单的修饰符的例子，它将每个页面的``changed_by``属性放在相应的``NavigationNode``中::
 
     from menus.base import Modifier
     from menus.menu_pool import menu_pool
@@ -211,34 +197,30 @@ Here is an example of a simple modifier that places each Page's ``changed_by`` a
     menu_pool.register_modifier(MyExampleModifier)
 
 
-It has a method :meth:`~menus.base.Modifier.modify` that should return a list
-of :class:`~menus.base.NavigationNode` instances.
-:meth:`~menus.base.Modifier.modify` should take the following arguments:
+它有一个方法:meth:`~menus.base.Modifier.modify`，
+该方法应该返回:class:`~menus.base.NavigationNode`实例列表。
+:meth:`~menus.base.Modifier.modify`应该接受以下参数:
 
 ``request``
-  A Django request instance. You want to modify based on sessions, or
-  user or permissions?
+  Django请求实例。要基于会话、用户或权限进行修改?
 
 ``nodes``
-  All the nodes. Normally you want to return them again.
+  所有的节点。通常，您希望再次返回它们。
 
 ``namespace``
-  A Menu Namespace. Only given if somebody requested a menu with only nodes
-  from this namespace.
+  菜单名称空间。只有当某人请求一个只有来自这个名称空间的节点的菜单时才会给出。
 
 ``root_id``
-  Was a menu request based on an ID?
+  菜单请求是否基于ID?
 
 ``post_cut``
-  Every modifier is called two times. First on the whole tree. After that the
-  tree gets cut to only show the nodes that are shown in the current menu.
-  After the cut the modifiers are called again with the final tree. If this is
-  the case ``post_cut`` is ``True``.
+  每个修饰符调用两次。首先在整棵树上。在此之后，树被剪切为只显示当前菜单中显示的节点。
+  切割之后，最后的树将再次调用修饰符。如果是这种情况，``post_cut``为 ``True``。
 
 ``breadcrumb``
-  Is this a breadcrumb call rather than a menu call?
+  这是breadcrumb call而不是menu call吗?
 
-Here is an example of a built-in modifier that marks all node levels::
+下面是一个内置修改器的例子，它可以标记所有节点级别::
 
 
     class Level(Modifier):
@@ -270,18 +252,15 @@ Here is an example of a built-in modifier that marks all node levels::
     menu_pool.register_modifier(Level)
 
 Performance issues in menu modifiers
+菜单修饰符中的性能问题
 ====================================
 
-Navigation modifiers can quickly become a performance bottleneck. Each modifier is called
-multiple times: For the breadcrumb (``breadcrumb=True``),
-for the whole menu tree (``post_cut=False``),
-for the menu tree cut to the visible part (``post_cut=True``) and perhaps for each level
-of the navigation. Performing inefficient operations inside a navigation modifier
-can hence lead to big performance issues.
-Some tips for keeping a modifier implementation fast:
+导航修饰符可能很快成为性能瓶颈。每个修饰符都被多次调用:对于面包屑(``breadcrumb=True``)，
+对于整个菜单树(``post_cut=False``)，对于菜单树切到可见部分(``post_cut=True``)，或者对于导航的每个级别。
+因此，在导航修饰符中执行低效的操作可能会导致较大的性能问题。保持修改器实现快速的一些技巧:
 
-* Specify when exactly the modifier is necessary (in breadcrumb, before or after cut).
-* Only consider nodes and pages relevant for the modification.
-* Perform as less database queries as possible (i.e. not in a loop).
-* In database queries, fetch exactly the attributes you are interested in.
-* If you have multiple modifications to do, try to apply them in the same method.
+* 具体指定何时需要修饰符(在breadcrumb中，在剪切之前或之后)。
+* 只考虑与修改相关的节点和页面。
+* 执行尽可能少的数据库查询(即不在循环中执行)
+* 在数据库查询中，获取您感兴趣的属性
+* 如果您有多个修改要做，请尝试在相同的方法中应用它们。

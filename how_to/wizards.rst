@@ -4,23 +4,21 @@
 
 #########################################
 How to implement content creation wizards
+如何实现内容创建向导
 #########################################
 
-django CMS offers a framework for creating 'wizards' - helpers - for content editors.
-
-They provide a simplified workflow for common tasks.
-
-A django CMS Page wizard already exists, but you can create your own for other content types very easily.
-
+django CMS提供了一个为内容编辑器创建向导的框架。
+它们为常见任务提供了简化的工作流。
+django CMS页面向导已经存在，但是您可以非常容易地为其他内容类型创建自己的页面向导。
 
 ********************************
 Create a content-creation wizard
+创建一个内容创建向导
 ********************************
 
-Creating a CMS content creation wizard for your own module is fairly easy.
+为自己的模块创建CMS内容创建向导相当容易。
 
-To begin, create a file in the root level of your module called ``forms.py``
-to create your form(s)::
+首先，在模块的根级创建一个名为``forms.py``的文件来创建表单:
 
     # my_apps/forms.py
 
@@ -31,15 +29,12 @@ to create your form(s)::
             model = MyApp
             exclude = []
 
-Now create another file in the root level called ``cms_wizards.py``.
-In this file, import ``Wizard`` as follows::
+现在在根级别创建另一个名为``cms_wizards.py``的文件。在该文件中，导入 ``Wizard`` 如下:
 
     from cms.wizards.wizard_base import Wizard
     from cms.wizards.wizard_pool import wizard_pool
 
-Then, simply subclass ``Wizard``, instantiate it, then register it. If you were to
-do this for ``MyApp``, it might look like this::
-
+然后，只需子类向导，实例化它，然后注册它。如果你为MyApp做这个，它可能是这样的:
 
     # my_apps/cms_wizards.py
 
@@ -62,8 +57,7 @@ do this for ``MyApp``, it might look like this::
 
 .. note::
 
-    If your model doesn't define a ``get_absolute_url`` function then your wizard
-    will require a :ref:`get_success_url` method.
+    如果您的模型没有定义``get_absolute_url``函数，那么您的向导将需要一个``get_success_url``方法。
 
     ..  code-block:: python
 
@@ -85,14 +79,16 @@ That's it!
 
 .. note::
 
-    The module name ``cms_wizards`` is special, in that any such-named modules in
-    your project's Python path will automatically be loaded, triggering the
-    registration of any wizards found in them. Wizards may be declared and
-    registered in other modules, but they might not be automatically loaded.
+    模块名``cms_wizard``是特殊的，因为在您的项目的Python路径中，
+    任何这样命名的模块都将自动加载，从而触发在其中找到的任何向导的注册。
+    向导可以在其他模块中声明和注册，但它们可能不会自动加载。
 
 The above example is using a ``ModelForm``, but you can also use ``forms.Form``.
 In this case, you **must** provide the model class as another keyword argument
 when you instantiate the Wizard object.
+
+上面的示例使用的是``ModelForm``，但是您也可以使用``forms.Form``。
+在这种情况下，在实例化向导对象时，必须将model类作为另一个关键字参数提供。
 
 For example::
 
@@ -125,8 +121,8 @@ For example::
 
     wizard_pool.register(my_app_wizard)
 
-You must subclass ``cms.wizards.wizard_base.Wizard`` to use it. This is because
-each wizard's uniqueness is determined by its class and module name.
+必须子类化 ``cms.wizards.wizard_base.Wizard`` 向导使用它。这是因为每个向导的惟一性由它的类和模块名决定。
 
 See the :ref:`Reference section on wizards <wizard_reference>` for technical details of the wizards
 API.
+有关向导API的技术细节，请参阅向导参考部分。

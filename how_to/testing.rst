@@ -1,5 +1,6 @@
 ###########################
 How to test your extensions
+如何测试您的扩展
 ###########################
 
 ************
@@ -7,6 +8,7 @@ Testing Apps
 ************
 
 Resolving View Names
+解决视图名称
 ====================
 
 Your apps need testing, but in your live site they aren't in ``urls.py`` as
